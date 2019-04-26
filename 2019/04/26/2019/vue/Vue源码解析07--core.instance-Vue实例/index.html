@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="还没想好写什么">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="attax1994">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="Vue源码解析07--core.instance-Vue实例">
+    
+
+    <!--Open Graph Description-->
+    
+        <meta property="og:description" content="还没想好写什么">
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="Attax1994">
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article">
+    
+
+    <!--Page Cover-->
+    
+
+    <meta name="twitter:card" content="summary">
+    
+
+    <!-- Title -->
+    
+    <title>Vue源码解析07--core.instance-Vue实例 - Attax1994</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Google Analytics -->
+    
+
+
+</head>
+
+
+<body>
+
+<div class="bg-gradient"></div>
+<div class="bg-pattern"></div>
+
+<!-- Menu -->
+<!--Menu Links and Overlay-->
+<div class="menu-bg">
+    <div class="menu-container">
+        <ul>
+            
+            <li class="menu-item">
+                <a href="/">
+                    Home
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/archives">
+                    Archives
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="https://attax1994.github.io/Resume/">
+                    About
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+<!--Hamburger Icon-->
+<nav>
+    <a href="#menu"></a>
+</nav>
+
+<div class="container">
+
+    <!-- Main Content -->
+    <div class="row">
+    <div class="col-sm-12">
+
+        <!--Title and Logo-->
+        <header>
+    <div class="logo">
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
+        
+    </div>
+</header>
+
+        <section class="main">
+            
+<div class="post">
+
+    <div class="post-header">
+        <h1 class="title">
+            <a href="/2019/04/26/2019/vue/Vue源码解析07--core.instance-Vue实例/">
+                Vue源码解析07--core.instance-Vue实例
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2019-04-26</span>
+            
+            
+            
+                <span class="category">
+                    <a href="/categories/前端开发/">前端开发</a>
+                </span>
+            
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- Gallery -->
+        
+
+        <!-- Post Content -->
+        <h2 id="1-index-js"><a href="#1-index-js" class="headerlink" title="1. index.js"></a>1. index.js</h2><p><code>src/instance/index.js</code>主要做如下几件事</p>
+<ol>
+<li><code>initMixin()</code>混入（mixin）初始化设置，包括：<ol>
+<li><code>initLifeCycle(vm)</code></li>
+<li><code>initEvents(vm)</code></li>
+<li><code>initRender(vm)</code></li>
+<li><code>callHook(vm, &#39;beforeCreate&#39;)</code></li>
+<li><code>initInjections(vm)</code></li>
+<li><code>initState(vm)</code></li>
+<li><code>initProvide(vm)</code></li>
+<li><code>callHook(vm, &#39;created&#39;)</code>   </li>
+</ol>
+</li>
+<li><code>stateMixin()</code>混入状态</li>
+<li><code>eventsMixin()</code>混入事件机制</li>
+<li><code>lifecycleMixin()</code>混入生命周期</li>
+<li><code>renderMixin()</code>混入渲染器</li>
+</ol>
+<h2 id="2-init-js"><a href="#2-init-js" class="headerlink" title="2. init.js"></a>2. init.js</h2><h3 id="initMixin-Vue"><a href="#initMixin-Vue" class="headerlink" title="initMixin(Vue)"></a><code>initMixin(Vue)</code></h3><p><code>initMixin(Vue)</code>混入初始化设置，改造Vue.prototype，赋予<code>_init(options)</code>方法。</p>
+<p>需要<code>initInternalComponent(vm, options)</code>和<code>resolveConstructorOptions(Ctor)</code>的辅助。</p>
+<p>从该段源码分析，可以得知一个<code>Component</code>在<code>create</code>阶段的执行步骤：</p>
+<ol>
+<li>设置Component的uid，作为唯一标识</li>
+<li>非prod环境记录开始点位</li>
+<li><code>vm._isVue = true</code>，防止被纳入observe</li>
+<li>如果是组件，初始化其内部设置；不是组件则执行设置的混入（递归混入上层组件的设置）</li>
+<li>非prod环境尝试Proxy API</li>
+<li><code>vm._self = vm</code>暴露自身</li>
+<li>初始化操作<ol>
+<li>初始化生命周期、事件机制、Render</li>
+<li><strong>触发beforeCreate钩子，进入生命周期</strong></li>
+<li>初始化Injection、状态、Provide</li>
+<li><strong>触发created钩子，创建完成</strong></li>
+</ol>
+</li>
+<li>非prod环境记录结束点位，计算创建时间</li>
+<li>对组件进行挂载</li>
+</ol>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 每次自增1，保持每个component有唯一的_uid</span></span><br><span class="line"><span class="keyword">let</span> uid = <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">initMixin</span>(<span class="params">Vue: Class&lt;Component&gt;</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 原型方法，初始化</span></span><br><span class="line">  Vue.prototype._init = <span class="function"><span class="keyword">function</span>(<span class="params">options: <span class="built_in">Object</span></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> vm: Compnent = <span class="keyword">this</span></span><br><span class="line">    <span class="comment">// 设置component的id</span></span><br><span class="line">    vm._uid = uid++</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">let</span> startTag, endTag</span><br><span class="line">    <span class="comment">// 检查环境，debug模式下使用</span></span><br><span class="line">    <span class="keyword">if</span>(process.env.NODE_ENV !== <span class="string">'production'</span> &amp;&amp; config.performance &amp;&amp; mark) &#123;</span><br><span class="line">      startTag = <span class="string">`vue-perf-start:<span class="subst">$&#123;vm._uid&#125;</span>`</span></span><br><span class="line">      endTag = <span class="string">`vue-perf-end:<span class="subst">$&#123;vm._uid&#125;</span>`</span></span><br><span class="line">      <span class="comment">// 记录初始化开始</span></span><br><span class="line">      mark(startTag)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 防止它被observe</span></span><br><span class="line">    vm._isVue = <span class="literal">true</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 如果是组件，就初始化内部设置</span></span><br><span class="line">    <span class="keyword">if</span>(options &amp;&amp; options._isComponent) &#123;</span><br><span class="line">      initInternalComponent(vm, options)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 不是组件，混入设置</span></span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">      vm.$options = mergeOptions(</span><br><span class="line">      	resolveConstructorOptions(vm.constructor),</span><br><span class="line">        options || &#123;&#125;,</span><br><span class="line">        vm</span><br><span class="line">      )</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 非生产环境下，尝试Proxy API</span></span><br><span class="line">    <span class="keyword">if</span>(process.env.NODE_ENV !== <span class="string">'production'</span>) &#123;</span><br><span class="line">      initProxy(vm)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      vm._renderProxy = vm</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 暴露自身</span></span><br><span class="line">    vm._self = vm</span><br><span class="line">    <span class="comment">// 初始化生命周期、事件机制、Render</span></span><br><span class="line">    initLifeCycle(vm)</span><br><span class="line">    initEvents(vm)</span><br><span class="line">    initRender(vm)</span><br><span class="line">    <span class="comment">// 触发beforeCreate钩子，进入生命周期!!!</span></span><br><span class="line">    callHook(vm, <span class="string">'beforeCreate'</span>)</span><br><span class="line">    <span class="comment">// 初始化Injection、状态、Provide</span></span><br><span class="line">    initInjections(vm)</span><br><span class="line">    initState(vm)</span><br><span class="line">    initProvide(vm)</span><br><span class="line">    <span class="comment">// 触发created钩子，创建完成</span></span><br><span class="line">    callHook(vm, <span class="string">'created'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(process.env.NODE_ENV !== <span class="string">'production'</span> &amp;&amp; config.performance &amp;&amp; mark) &#123;</span><br><span class="line">      <span class="comment">// Component的名称</span></span><br><span class="line">      vm._name = formatComponentName(vm, <span class="literal">false</span>)</span><br><span class="line">      <span class="comment">// 记录初始化结束</span></span><br><span class="line">      mark(endTag)</span><br><span class="line">      <span class="comment">// 计算初始化所需的时间，便于性能分析</span></span><br><span class="line">      measure(<span class="string">`vue <span class="subst">$&#123;vm._name&#125;</span> init`</span>, startTag, endTag)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 如果有DOM节点，就将其挂载上去</span></span><br><span class="line">    <span class="keyword">if</span>(vm.$options.el) &#123;</span><br><span class="line">      vm.$mount(vm.$options.el)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="initInternalComponent-vm-options"><a href="#initInternalComponent-vm-options" class="headerlink" title="initInternalComponent(vm, options)"></a><code>initInternalComponent(vm, options)</code></h3><p><code>initInternalComponent(vm, options)</code>用于初始化组件内部的设置。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">initInternalComponent</span>(<span class="params">vm: Component, options: InternalComponentOptions</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> opts = vm.$options = <span class="built_in">Object</span>.create(vm.constructor.options)</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">const</span> parentVnode = options._parentVnode</span><br><span class="line">  opts.parent = options.parent</span><br><span class="line">  opts._parentVnode = parentVnode</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 拷贝父组件的设置</span></span><br><span class="line">  <span class="keyword">const</span> vnodeComponentOptions = parentVnode.componentOptions</span><br><span class="line">  opts.propsData = vnodeComponentOptions.propsData</span><br><span class="line">  opts._parentListeners = vnodeComponentOptions.listeners</span><br><span class="line">  opts._renderChildren = vnodeComponentOptions.children</span><br><span class="line">  opts._componentTag = vnodeComponentOptions.tag</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (options.render) &#123;</span><br><span class="line">    opts.render = options.render</span><br><span class="line">    opts.staticRenderFns = options.staticRenderFns</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="resolveConstructorOptions-Ctor"><a href="#resolveConstructorOptions-Ctor" class="headerlink" title="resolveConstructorOptions(Ctor)"></a><code>resolveConstructorOptions(Ctor)</code></h3><p><code>resolveConstructorOptions(Ctor)</code>用于处理构造器的设置（主要是递归解决继承的设置）。</p>
+<p>需要<code>resolveModifiedOptions(Ctor)</code>和<code>dedupe(latest, extended, sealed)</code>的辅助处理</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">resolveConstructorOptions</span>(<span class="params">Ctor: Class&lt;Component&gt;</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> options = Ctor.options</span><br><span class="line">  <span class="keyword">if</span>(Ctor.super) &#123;</span><br><span class="line">    <span class="keyword">const</span> superOptions = resolveConstructorOptions(Ctor.super)</span><br><span class="line">    <span class="keyword">const</span> cachedSuperOptions = Ctor.superOptions</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 上级的设置发生改变，需要刷新</span></span><br><span class="line">    <span class="keyword">if</span>(superOptions !== cachedSuperOptions) &#123;</span><br><span class="line">      Ctor.superOptions = superOptions</span><br><span class="line">      </span><br><span class="line">      <span class="comment">// 获取修改过的设置组成的键值对</span></span><br><span class="line">      <span class="keyword">const</span> modifiedOptions = resolveModifiedOptions(Ctor)</span><br><span class="line">      <span class="keyword">if</span>(modifiedOptions) &#123;</span><br><span class="line">        <span class="comment">// 混入修改过的设置</span></span><br><span class="line">        extend(Ctor.extendOptions, modifiedOptions)</span><br><span class="line">      &#125;</span><br><span class="line">      </span><br><span class="line">      <span class="comment">// 合并设置</span></span><br><span class="line">      options = Ctor.options = mergeOptions(superOptions, Ctor.extendOptions)</span><br><span class="line">      <span class="keyword">if</span>(options.name) &#123;</span><br><span class="line">        options.components[options.name] = Ctor</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> options</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取改变的设置，返回其构成的对象</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">resolveModifiedOptions</span>(<span class="params">Ctor: Class&lt;Component&gt;</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> modified</span><br><span class="line">  <span class="keyword">const</span> &#123;options: latest, extendOptions: extended, sealedOptins: sealed&#125; = Ctor</span><br><span class="line">  <span class="keyword">for</span>(<span class="keyword">const</span> key <span class="keyword">in</span> latest) &#123;</span><br><span class="line">    <span class="keyword">if</span>(latest[key] !== sealed[key]) &#123;</span><br><span class="line">      <span class="keyword">if</span>(!modified) modified = &#123;&#125;</span><br><span class="line">      <span class="comment">// 考虑value为Array的情况</span></span><br><span class="line">      modified[key] = dedupe(latest[key], extended[key], sealed[key])</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> modified</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 对Array的情况也进行处理，防止忽略</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">dedupe</span>(<span class="params">latest, extended, sealed</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 如果是Array，则需要遍历处理</span></span><br><span class="line">  <span class="keyword">if</span>(<span class="built_in">Array</span>.isArray(latest)) &#123;</span><br><span class="line">    <span class="keyword">const</span> res = []</span><br><span class="line">    sealed = <span class="built_in">Array</span>.isArray(sealed) ? sealed : [sealed]</span><br><span class="line">    extended = <span class="built_in">Array</span>.isArray(extended)? extended : [extended]</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 将非sealed设置，但是extended的设置加入到结果中</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; latest.length; i++) &#123;</span><br><span class="line">      <span class="keyword">if</span>(extended.indexOf(latest[i]) &gt;= <span class="number">0</span> || sealed.indexOf(latest[i]) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        res.push[latest[i]]</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 不是Array，直接返回latest</span></span><br><span class="line">  <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> latest</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+
+    
+        <div class="post-tags">
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <a href="/tags/技术原理/">#技术原理</a>
+        </div>
+    
+
+    <!-- Comments -->
+    
+
+</div>
+        </section>
+
+    </div>
+</div>
+
+
+</div>
+
+<!-- Footer -->
+<div class="push"></div>
+
+<footer class="footer-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
+                <h2>About</h2>
+                <p>
+                    This theme was developed by <a href="https://github.com/klugjo">Jonathan Klughertz</a>. The source code is available on Github. Create Websites. Make Magic.
+                </p>
+            </div>
+            
+    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/6.bindActionCreators/">Redux源码解析06--bindActionCr</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/5.combineReducers/">Redux源码解析05--combineReduc</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/4.applyMiddleware/">Redux源码解析04--applyMiddlew</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/3.compose/">Redux源码解析03--compose</a>
+            </li>
+            
+        </ul>
+    </div>
+
+
+
+            
+<div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 footer-categories">
+    <h2>Categories</h2>
+    <ul>
+        
+        <li>
+            <a class="footer-post" href="/categories/源码分析/">源码分析</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/学习计划/">学习计划</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/tutorial/">tutorial</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/前端开发/">前端开发</a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="list-inline footer-social-icons">
+                    
+                    <li class="list-inline-item">
+                        <a href="https://github.com/klugjo/hexo-theme-alpha-dust">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-github"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://twitter.com/?lang=en">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-twitter"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.facebook.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-facebook"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.instagram.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-instagram"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://dribbble.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-dribbble"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://plus.google.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-google-plus"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.behance.net/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-behance"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://500px.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-500px"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="mailto:test@example.com">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-envelope-o"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="\#">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-rss"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="footer-copyright">
+                    @Untitled. All right reserved | Design & Hexo <a href="http://www.codeblocq.com/">Jonathan Klughertz</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- After footer scripts -->
+
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Tween Max -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/main.js"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="还没想好写什么">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="attax1994">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="Vue源码解析06--core.util.options">
+    
+
+    <!--Open Graph Description-->
+    
+        <meta property="og:description" content="还没想好写什么">
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="Attax1994">
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article">
+    
+
+    <!--Page Cover-->
+    
+
+    <meta name="twitter:card" content="summary">
+    
+
+    <!-- Title -->
+    
+    <title>Vue源码解析06--core.util.options - Attax1994</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Google Analytics -->
+    
+
+
+</head>
+
+
+<body>
+
+<div class="bg-gradient"></div>
+<div class="bg-pattern"></div>
+
+<!-- Menu -->
+<!--Menu Links and Overlay-->
+<div class="menu-bg">
+    <div class="menu-container">
+        <ul>
+            
+            <li class="menu-item">
+                <a href="/">
+                    Home
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/archives">
+                    Archives
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="https://attax1994.github.io/Resume/">
+                    About
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+<!--Hamburger Icon-->
+<nav>
+    <a href="#menu"></a>
+</nav>
+
+<div class="container">
+
+    <!-- Main Content -->
+    <div class="row">
+    <div class="col-sm-12">
+
+        <!--Title and Logo-->
+        <header>
+    <div class="logo">
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
+        
+    </div>
+</header>
+
+        <section class="main">
+            
+<div class="post">
+
+    <div class="post-header">
+        <h1 class="title">
+            <a href="/2019/04/26/2019/vue/Vue源码解析06--core.util.options/">
+                Vue源码解析06--core.util.options
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2019-04-26</span>
+            
+            
+            
+                <span class="category">
+                    <a href="/categories/前端开发/">前端开发</a>
+                </span>
+            
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- Gallery -->
+        
+
+        <!-- Post Content -->
+        <h2 id="util-options-js"><a href="#util-options-js" class="headerlink" title="util/options.js"></a>util/options.js</h2><h3 id="建模"><a href="#建模" class="headerlink" title="建模"></a>建模</h3><p>Options涉及以下几个模型和字段：</p>
+<ul>
+<li>strats：strategies，设置的覆盖策略</li>
+<li>defaultStrat：默认的策略</li>
+<li>data</li>
+<li>生命周期钩子</li>
+<li>assets：component，directive，filter</li>
+<li>watcher</li>
+<li>props（验证由props.js完成）</li>
+<li>methods</li>
+<li>inject</li>
+<li>computed</li>
+<li>provide</li>
+</ul>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 覆盖原设置的策略</span></span><br><span class="line"><span class="keyword">const</span> strats = config.optionMergeStrategies</span><br><span class="line"></span><br><span class="line"><span class="comment">// 默认策略</span></span><br><span class="line"><span class="keyword">const</span> defaultStrat = <span class="function"><span class="keyword">function</span> (<span class="params">parentVal: <span class="built_in">any</span>, childVal: <span class="built_in">any</span></span>): <span class="title">any</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> childVal === <span class="literal">undefined</span></span><br><span class="line">    ? parentVal</span><br><span class="line">    : childVal</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 受约束的设置（Options只能在创建实例时候传入）</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span>) &#123;</span><br><span class="line">  strats.el = strats.propsData = <span class="function"><span class="keyword">function</span> (<span class="params">parent, child, vm, key</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!vm) &#123;</span><br><span class="line">      warn(</span><br><span class="line">        <span class="string">`option "<span class="subst">$&#123;key&#125;</span>" can only be used during instance `</span> +</span><br><span class="line">        <span class="string">'creation with the `new` keyword.'</span>,</span><br><span class="line">      )</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> defaultStrat(parent, child)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Vue-extend-在options字段的底层实现"><a href="#Vue-extend-在options字段的底层实现" class="headerlink" title="Vue.extend()在options字段的底层实现"></a>Vue.extend()在options字段的底层实现</h3><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** </span></span><br><span class="line"><span class="comment"> * Vue.extend的底层实现，同时使用了mergeData()来对两个对象进行递归合并</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">mergeDataOrFn</span>(<span class="params">parentVal: <span class="built_in">any</span>, childVal: <span class="built_in">any</span>, vm?: Component</span>): ?<span class="title">Function</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 没有传入vm，说明是函数的合并，返回闭包</span></span><br><span class="line">  <span class="keyword">if</span> (!vm) &#123;</span><br><span class="line">    <span class="comment">// 在Vue.extend中，传入的应当为function</span></span><br><span class="line">    <span class="keyword">if</span> (!childVal) &#123;</span><br><span class="line">      <span class="keyword">return</span> parentVal</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!parentVal) &#123;</span><br><span class="line">      <span class="keyword">return</span> childVal</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果parentVal和childVal同时存在，那么返回一个闭包</span></span><br><span class="line">    <span class="comment">// 闭包执行后返回对两个函数结果进行递归合并的对象</span></span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="title">mergedDataFn</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> mergeData(</span><br><span class="line">        <span class="keyword">typeof</span> childVal === <span class="string">'function'</span> ? childVal.call(<span class="keyword">this</span>, <span class="keyword">this</span>) : childVal,</span><br><span class="line">        <span class="keyword">typeof</span> parentVal === <span class="string">'function'</span> ? parentVal.call(<span class="keyword">this</span>, <span class="keyword">this</span>) : parentVal,</span><br><span class="line">      )</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 如果传入vm，说明是实例的合并，返回合并后的结果</span></span><br><span class="line">  <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="title">mergedInstanceDataFn</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">      <span class="keyword">const</span> instanceData = <span class="keyword">typeof</span> childVal === <span class="string">'function'</span></span><br><span class="line">        ? childVal.call(vm, vm)</span><br><span class="line">        : childVal</span><br><span class="line">      <span class="keyword">const</span> defaultData = <span class="keyword">typeof</span> parentVal === <span class="string">'function'</span></span><br><span class="line">        ? parentVal.call(vm, vm)</span><br><span class="line">        : parentVal</span><br><span class="line">      <span class="keyword">if</span> (instanceData) &#123;</span><br><span class="line">        <span class="keyword">return</span> mergeData(instanceData, defaultData)</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> defaultData</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 将两个对象合并，碰到引用类型的情况，对其进行递归合并</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">mergeData</span>(<span class="params">to: <span class="built_in">Object</span>, <span class="keyword">from</span>: ?<span class="built_in">Object</span></span>): <span class="title">Object</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!<span class="keyword">from</span>) <span class="keyword">return</span> to</span><br><span class="line">  <span class="keyword">let</span> key, toVal, fromVal</span><br><span class="line">  <span class="keyword">const</span> keys = <span class="built_in">Object</span>.keys(<span class="keyword">from</span>)</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; keys.length; i++) &#123;</span><br><span class="line">    key = keys[i]</span><br><span class="line">    toVal = to[key]</span><br><span class="line">    fromVal = <span class="keyword">from</span>[key]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!hasOwn(to, key)) &#123;</span><br><span class="line">      <span class="comment">// 对于新加入的属性，手动触发Vue.set</span></span><br><span class="line">      <span class="keyword">set</span>(to, key, fromVal)</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (isPlainObject(toVal) &amp;&amp; isPlainObject(fromVal)) &#123;</span><br><span class="line">      <span class="comment">// 同为对象，进行递归</span></span><br><span class="line">      mergeData(toVal, fromVal)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> to</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="字段的定义与继承（mixin形式）"><a href="#字段的定义与继承（mixin形式）" class="headerlink" title="字段的定义与继承（mixin形式）"></a>字段的定义与继承（mixin形式）</h3><p>涉及了创建组件时，常用字段的定义与继承，包括：</p>
+<ul>
+<li>data</li>
+<li>生命周期钩子</li>
+<li>assets：component，directive，filter</li>
+<li>watcher</li>
+<li>props，methods，inject，computed，provide</li>
+</ul>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Data字段相关处理</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">// data字段的生成策略，这一段决定了data要使用function来创建!!!</span></span><br><span class="line">strats.data = <span class="function"><span class="keyword">function</span> (<span class="params">parentVal: <span class="built_in">any</span>, childVal: <span class="built_in">any</span>, vm?: Component</span>): ?<span class="title">Function</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!vm) &#123;</span><br><span class="line">    <span class="comment">// 提示vm.data对象必须经由function来创建</span></span><br><span class="line">    <span class="keyword">if</span> (childVal &amp;&amp; <span class="keyword">typeof</span> childVal !== <span class="string">'function'</span>) &#123;</span><br><span class="line">      process.env.NODE_ENV !== <span class="string">'production'</span> &amp;&amp; warn(</span><br><span class="line">        <span class="string">'The "data" option should be a function '</span> +</span><br><span class="line">        <span class="string">'that returns a per-instance value in component '</span> +</span><br><span class="line">        <span class="string">'definitions.'</span>,</span><br><span class="line">        vm,</span><br><span class="line">      )</span><br><span class="line"></span><br><span class="line">      <span class="keyword">return</span> parentVal</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> mergeDataOrFn(parentVal, childVal)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> mergeDataOrFn(parentVal, childVal, vm)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 合并生命周期钩子，返回形式为Array</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">mergeHook</span>(<span class="params">parentVal: ?<span class="built_in">Array</span>&lt;<span class="built_in">Function</span>&gt;, childVal: ?<span class="built_in">Function</span> | ?<span class="built_in">Array</span>&lt;<span class="built_in">Function</span>&gt;</span>): ?<span class="title">Array</span>&lt;<span class="title">Function</span>&gt; </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> childVal</span><br><span class="line">    ? parentVal</span><br><span class="line">      ? parentVal.concat(childVal)</span><br><span class="line">      : <span class="built_in">Array</span>.isArray(childVal)</span><br><span class="line">        ? childVal</span><br><span class="line">        : [childVal]</span><br><span class="line">    : parentVal</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">LIFECYCLE_HOOKS.forEach(<span class="function"><span class="params">hook</span> =&gt;</span> &#123;</span><br><span class="line">  strats[hook] = mergeHook</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Assets</span></span><br><span class="line"><span class="comment"> * Assets指component，directive和filter</span></span><br><span class="line"><span class="comment"> * 创建vm时，要进行三方面的options合并，包括构造器options，实例options和父级options</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">mergeAssets</span>(<span class="params">parentVal: ?<span class="built_in">Object</span>, childVal: ?<span class="built_in">Object</span>, vm?: Component, key: <span class="built_in">string</span></span>): <span class="title">Object</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 父级放置于原型链上，做对象委托</span></span><br><span class="line">  <span class="keyword">const</span> res = <span class="built_in">Object</span>.create(parentVal || <span class="literal">null</span>)</span><br><span class="line">  <span class="keyword">if</span> (childVal) &#123;</span><br><span class="line">    <span class="comment">// 提示类型是否正确</span></span><br><span class="line">    process.env.NODE_ENV !== <span class="string">'production'</span> &amp;&amp; assertObjectType(key, childVal, vm)</span><br><span class="line">    <span class="comment">// 执行merge</span></span><br><span class="line">    <span class="keyword">return</span> extend(res, childVal)</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> res</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ASSET_TYPES.forEach(<span class="function"><span class="keyword">function</span> (<span class="params"><span class="keyword">type</span></span>) </span>&#123;</span><br><span class="line">  strats[<span class="keyword">type</span> + <span class="string">'s'</span>] = mergeAssets</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Watchers.</span></span><br><span class="line"><span class="comment"> * 要保证相同哈希值的Watcher不会去覆盖另一个，就得使用Array的形式</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">strats.watch = <span class="function"><span class="keyword">function</span> (<span class="params">parentVal: ?<span class="built_in">Object</span>, childVal: ?<span class="built_in">Object</span>, vm?: Component, key: <span class="built_in">string</span></span>): ?<span class="title">Object</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 绕过FireFox的Object.prototype.watch问题</span></span><br><span class="line">  <span class="keyword">if</span> (parentVal === nativeWatch) parentVal = <span class="literal">undefined</span></span><br><span class="line">  <span class="keyword">if</span> (childVal === nativeWatch) childVal = <span class="literal">undefined</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!childVal) <span class="keyword">return</span> <span class="built_in">Object</span>.create(parentVal || <span class="literal">null</span>)</span><br><span class="line">  <span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span>) &#123;</span><br><span class="line">    assertObjectType(key, childVal, vm)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (!parentVal) <span class="keyword">return</span> childVal</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> ret = &#123;&#125;</span><br><span class="line">  extend(ret, parentVal)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 使用Array来记录watcher，不是Array就做转换</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">const</span> key <span class="keyword">in</span> childVal) &#123;</span><br><span class="line">    <span class="keyword">let</span> parent = ret[key]</span><br><span class="line">    <span class="keyword">const</span> child = childVal[key]</span><br><span class="line">    <span class="keyword">if</span> (parent &amp;&amp; !<span class="built_in">Array</span>.isArray(parent)) &#123;</span><br><span class="line">      parent = [parent]</span><br><span class="line">    &#125;</span><br><span class="line">    ret[key] = parent</span><br><span class="line">      ? parent.concat(child)</span><br><span class="line">      : <span class="built_in">Array</span>.isArray(child) ? child : [child]</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> ret</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 其他对象的哈希合并，可以直接覆盖</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">strats.props =</span><br><span class="line">  strats.methods =</span><br><span class="line">    strats.inject =</span><br><span class="line">      strats.computed = <span class="function"><span class="keyword">function</span> (<span class="params">parentVal: ?<span class="built_in">Object</span>, childVal: ?<span class="built_in">Object</span>, vm?: Component, key: <span class="built_in">string</span></span>): ?<span class="title">Object</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (childVal &amp;&amp; process.env.NODE_ENV !== <span class="string">'production'</span>) &#123;</span><br><span class="line">          assertObjectType(key, childVal, vm)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (!parentVal) <span class="keyword">return</span> childVal</span><br><span class="line">        <span class="keyword">const</span> ret = <span class="built_in">Object</span>.create(<span class="literal">null</span>)</span><br><span class="line">        extend(ret, parentVal)</span><br><span class="line">        <span class="keyword">if</span> (childVal) extend(ret, childVal)</span><br><span class="line">        <span class="keyword">return</span> ret</span><br><span class="line">      &#125;</span><br><span class="line">strats.provide = mergeDataOrFn</span><br></pre></td></tr></table></figure>
+<h3 id="字段的规整（normalize）"><a href="#字段的规整（normalize）" class="headerlink" title="字段的规整（normalize）"></a>字段的规整（normalize）</h3><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 保证props的写法规整为Object的形式，且内部每个prop都转换为Object</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">normalizeProps</span>(<span class="params">options: <span class="built_in">Object</span>, vm: ?Component</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> props = options.props</span><br><span class="line">  <span class="keyword">if</span> (!props) <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> res = &#123;&#125;</span><br><span class="line">  <span class="keyword">let</span> i, val, name</span><br><span class="line">  <span class="comment">// 如果是Array&lt;string&gt;，则转为Object，其键为每个string驼峰式的写法</span></span><br><span class="line">  <span class="keyword">if</span> (<span class="built_in">Array</span>.isArray(props)) &#123;</span><br><span class="line">    i = props.length</span><br><span class="line">    <span class="keyword">while</span> (i--) &#123;</span><br><span class="line">      val = props[i]</span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">typeof</span> val === <span class="string">'string'</span>) &#123;</span><br><span class="line">        name = camelize(val)</span><br><span class="line">        res[name] = &#123;<span class="keyword">type</span>: <span class="literal">null</span>&#125;</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span>) &#123;</span><br><span class="line">        warn(<span class="string">'props must be strings when using array syntax.'</span>)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 如果是Object，只需转换一下非对象形式声明的prop</span></span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">if</span> (isPlainObject(props)) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">const</span> key <span class="keyword">in</span> props) &#123;</span><br><span class="line">      val = props[key]</span><br><span class="line">      name = camelize(key)</span><br><span class="line">      res[name] = isPlainObject(val)</span><br><span class="line">        ? val</span><br><span class="line">        : &#123;<span class="keyword">type</span>: val&#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span>) &#123;</span><br><span class="line">    warn(</span><br><span class="line">      <span class="string">`Invalid value for option "props": expected an Array or an Object, `</span> +</span><br><span class="line">      <span class="string">`but got <span class="subst">$&#123;toRawType(props)&#125;</span>.`</span>,</span><br><span class="line">      vm,</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">  options.props = res</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 将Injections的写法规整为Object的形式</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">normalizeInject</span>(<span class="params">options: <span class="built_in">Object</span>, vm: ?Component</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> inject = options.inject</span><br><span class="line">  <span class="keyword">if</span> (!inject) <span class="keyword">return</span></span><br><span class="line">  <span class="keyword">const</span> normalized = options.inject = &#123;&#125;</span><br><span class="line">  <span class="keyword">if</span> (<span class="built_in">Array</span>.isArray(inject)) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; inject.length; i++) &#123;</span><br><span class="line">      normalized[inject[i]] = &#123;<span class="keyword">from</span>: inject[i]&#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (isPlainObject(inject)) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">const</span> key <span class="keyword">in</span> inject) &#123;</span><br><span class="line">      <span class="keyword">const</span> val = inject[key]</span><br><span class="line">      normalized[key] = isPlainObject(val)</span><br><span class="line">        ? extend(&#123;<span class="keyword">from</span>: key&#125;, val)</span><br><span class="line">        : &#123;<span class="keyword">from</span>: val&#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span>) &#123;</span><br><span class="line">    warn(</span><br><span class="line">      <span class="string">`Invalid value for option "inject": expected an Array or an Object, `</span> +</span><br><span class="line">      <span class="string">`but got <span class="subst">$&#123;toRawType(inject)&#125;</span>.`</span>,</span><br><span class="line">      vm,</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 将函数形式的directives的写法规整为Object的形式</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">normalizeDirectives</span>(<span class="params">options: <span class="built_in">Object</span></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> dirs = options.directives</span><br><span class="line">  <span class="keyword">if</span> (dirs) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">const</span> key <span class="keyword">in</span> dirs) &#123;</span><br><span class="line">      <span class="keyword">const</span> def = dirs[key]</span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">typeof</span> def === <span class="string">'function'</span>) &#123;</span><br><span class="line">        dirs[key] = &#123;bind: def, update: def&#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="全局API：mergeOptions"><a href="#全局API：mergeOptions" class="headerlink" title="全局API：mergeOptions"></a>全局API：mergeOptions</h3><p>该API即为<code>Vue.util.mergeOptions()</code>方法</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 合并两个option对象，包括props，Injections和directive的合并</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">mergeOptions</span>(<span class="params">parent: <span class="built_in">Object</span>, child: <span class="built_in">Object</span>, vm?: Component</span>): <span class="title">Object</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span>) &#123;</span><br><span class="line">    checkComponents(child)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">typeof</span> child === <span class="string">'function'</span>) &#123;</span><br><span class="line">    child = child.options</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 规整三个字段</span></span><br><span class="line">  normalizeProps(child, vm)</span><br><span class="line">  normalizeInject(child, vm)</span><br><span class="line">  normalizeDirectives(child)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 如果有一些特殊继承规则，则先对父级进行预处理</span></span><br><span class="line">  <span class="keyword">const</span> extendsFrom = child.extends</span><br><span class="line">  <span class="keyword">if</span> (extendsFrom) &#123;</span><br><span class="line">    parent = mergeOptions(parent, extendsFrom, vm)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (child.mixins) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>, l = child.mixins.length; i &lt; l; i++) &#123;</span><br><span class="line">      parent = mergeOptions(parent, child.mixins[i], vm)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 合并各个字段</span></span><br><span class="line">  <span class="keyword">const</span> options = &#123;&#125;</span><br><span class="line">  <span class="keyword">let</span> key</span><br><span class="line">  <span class="keyword">for</span> (key <span class="keyword">in</span> parent) &#123;</span><br><span class="line">    mergeField(key)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">for</span> (key <span class="keyword">in</span> child) &#123;</span><br><span class="line">    <span class="keyword">if</span> (!hasOwn(parent, key)) &#123;</span><br><span class="line">      mergeField(key)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 套用合并策略，进行某个字段的合并</span></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">mergeField</span>(<span class="params">key</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> strat = strats[key] || defaultStrat</span><br><span class="line">    options[key] = strat(parent[key], child[key], vm, key)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> options</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 检查components引入的子组件名称是否合法</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkComponents</span>(<span class="params">options: <span class="built_in">Object</span></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">const</span> key <span class="keyword">in</span> options.components) &#123;</span><br><span class="line">    validateComponentName(key)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 验证组件名称，这一段决定了组件名必须以字母开头，并只能使用字母和连字符</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">validateComponentName</span>(<span class="params">name: <span class="built_in">string</span></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!<span class="regexp">/^[a-zA-Z][\w-]*$/</span>.test(name)) &#123;</span><br><span class="line">    warn(</span><br><span class="line">      <span class="string">'Invalid component name: "'</span> + name + <span class="string">'". Component names '</span> +</span><br><span class="line">      <span class="string">'can only contain alphanumeric characters and the hyphen, '</span> +</span><br><span class="line">      <span class="string">'and must start with a letter.'</span>,</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (isBuiltInTag(name) || config.isReservedTag(name)) &#123;</span><br><span class="line">    warn(</span><br><span class="line">      <span class="string">'Do not use built-in or reserved HTML elements as component '</span> +</span><br><span class="line">      <span class="string">'id: '</span> + name,</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="其他helper函数"><a href="#其他helper函数" class="headerlink" title="其他helper函数"></a>其他helper函数</h3><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 断言是否为Object</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">assertObjectType</span>(<span class="params">name: <span class="built_in">string</span>, value: <span class="built_in">any</span>, vm: ?Component</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!isPlainObject(value)) &#123;</span><br><span class="line">    warn(</span><br><span class="line">      <span class="string">`Invalid value for option "<span class="subst">$&#123;name&#125;</span>": expected an Object, `</span> +</span><br><span class="line">      <span class="string">`but got <span class="subst">$&#123;toRawType(value)&#125;</span>.`</span>,</span><br><span class="line">      vm,</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 检查options中是否有某个asset（component，directive，filter）</span></span><br><span class="line"><span class="comment"> * 指示子组件实例是否要访问其上层链中定义的asset</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">resolveAsset</span>(<span class="params">options: <span class="built_in">Object</span>, <span class="keyword">type</span>: <span class="built_in">string</span>, id: <span class="built_in">string</span>, warnMissing?: <span class="built_in">boolean</span></span>): <span class="title">any</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">typeof</span> id !== <span class="string">'string'</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">const</span> assets = options[<span class="keyword">type</span>]</span><br><span class="line">  <span class="comment">// 用三种拼写形式去检查，</span></span><br><span class="line">  <span class="keyword">if</span> (hasOwn(assets, id)) <span class="keyword">return</span> assets[id]</span><br><span class="line">  <span class="keyword">const</span> camelizedId = camelize(id)</span><br><span class="line">  <span class="keyword">if</span> (hasOwn(assets, camelizedId)) <span class="keyword">return</span> assets[camelizedId]</span><br><span class="line">  <span class="keyword">const</span> PascalCaseId = capitalize(camelizedId)</span><br><span class="line">  <span class="keyword">if</span> (hasOwn(assets, PascalCaseId)) <span class="keyword">return</span> assets[PascalCaseId]</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> res = assets[id] || assets[camelizedId] || assets[PascalCaseId]</span><br><span class="line">  <span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span> &amp;&amp; warnMissing &amp;&amp; !res) &#123;</span><br><span class="line">    warn(</span><br><span class="line">      <span class="string">'Failed to resolve '</span> + <span class="keyword">type</span>.slice(<span class="number">0</span>, <span class="number">-1</span>) + <span class="string">': '</span> + id,</span><br><span class="line">      options,</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> res</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+
+    
+        <div class="post-tags">
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <a href="/tags/技术原理/">#技术原理</a>
+        </div>
+    
+
+    <!-- Comments -->
+    
+
+</div>
+        </section>
+
+    </div>
+</div>
+
+
+</div>
+
+<!-- Footer -->
+<div class="push"></div>
+
+<footer class="footer-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
+                <h2>About</h2>
+                <p>
+                    This theme was developed by <a href="https://github.com/klugjo">Jonathan Klughertz</a>. The source code is available on Github. Create Websites. Make Magic.
+                </p>
+            </div>
+            
+    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/6.bindActionCreators/">Redux源码解析06--bindActionCr</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/5.combineReducers/">Redux源码解析05--combineReduc</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/4.applyMiddleware/">Redux源码解析04--applyMiddlew</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/3.compose/">Redux源码解析03--compose</a>
+            </li>
+            
+        </ul>
+    </div>
+
+
+
+            
+<div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 footer-categories">
+    <h2>Categories</h2>
+    <ul>
+        
+        <li>
+            <a class="footer-post" href="/categories/源码分析/">源码分析</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/学习计划/">学习计划</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/tutorial/">tutorial</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/前端开发/">前端开发</a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="list-inline footer-social-icons">
+                    
+                    <li class="list-inline-item">
+                        <a href="https://github.com/klugjo/hexo-theme-alpha-dust">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-github"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://twitter.com/?lang=en">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-twitter"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.facebook.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-facebook"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.instagram.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-instagram"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://dribbble.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-dribbble"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://plus.google.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-google-plus"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.behance.net/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-behance"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://500px.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-500px"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="mailto:test@example.com">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-envelope-o"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="\#">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-rss"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="footer-copyright">
+                    @Untitled. All right reserved | Design & Hexo <a href="http://www.codeblocq.com/">Jonathan Klughertz</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- After footer scripts -->
+
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Tween Max -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/main.js"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>

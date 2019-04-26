@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="还没想好写什么">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="attax1994">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="Vue源码解析05--core.util.props">
+    
+
+    <!--Open Graph Description-->
+    
+        <meta property="og:description" content="还没想好写什么">
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="Attax1994">
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article">
+    
+
+    <!--Page Cover-->
+    
+
+    <meta name="twitter:card" content="summary">
+    
+
+    <!-- Title -->
+    
+    <title>Vue源码解析05--core.util.props - Attax1994</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Google Analytics -->
+    
+
+
+</head>
+
+
+<body>
+
+<div class="bg-gradient"></div>
+<div class="bg-pattern"></div>
+
+<!-- Menu -->
+<!--Menu Links and Overlay-->
+<div class="menu-bg">
+    <div class="menu-container">
+        <ul>
+            
+            <li class="menu-item">
+                <a href="/">
+                    Home
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/archives">
+                    Archives
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="https://attax1994.github.io/Resume/">
+                    About
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+<!--Hamburger Icon-->
+<nav>
+    <a href="#menu"></a>
+</nav>
+
+<div class="container">
+
+    <!-- Main Content -->
+    <div class="row">
+    <div class="col-sm-12">
+
+        <!--Title and Logo-->
+        <header>
+    <div class="logo">
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
+        
+    </div>
+</header>
+
+        <section class="main">
+            
+<div class="post">
+
+    <div class="post-header">
+        <h1 class="title">
+            <a href="/2019/04/26/2019/vue/Vue源码解析05--core.util.props/">
+                Vue源码解析05--core.util.props
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2019-04-26</span>
+            
+            
+            
+                <span class="category">
+                    <a href="/categories/前端开发/">前端开发</a>
+                </span>
+            
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- Gallery -->
+        
+
+        <!-- Post Content -->
+        <h2 id="util-props-js"><a href="#util-props-js" class="headerlink" title="util/props.js"></a>util/props.js</h2><p>props.js主要暴露一个<code>validateProp()</code>方法，将vm中的单个Prop合法化。如遇到不合法的地方，则发出警告。</p>
+<h3 id="建模"><a href="#建模" class="headerlink" title="建模"></a>建模</h3><p>一个Prop有四个属性：</p>
+<ul>
+<li>type：Prop的类型，传入类型构造器（多个情况下传Array）</li>
+<li>default：默认值</li>
+<li>required：是否一定要传入</li>
+<li>validator：验证函数</li>
+</ul>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// property的选项（注册props时候填写）</span></span><br><span class="line"><span class="keyword">type</span> PropOptions = &#123;</span><br><span class="line">  <span class="keyword">type</span>: <span class="built_in">Function</span> | <span class="built_in">Array</span>&lt;<span class="built_in">Function</span>&gt; | <span class="literal">null</span>,</span><br><span class="line">  <span class="keyword">default</span>: <span class="built_in">any</span>,</span><br><span class="line">  required: ?<span class="built_in">boolean</span>,</span><br><span class="line">  validator: ?<span class="built_in">Function</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="获取default值"><a href="#获取default值" class="headerlink" title="获取default值"></a>获取default值</h3><p>需要注意，如果<code>type</code>是<code>Object</code>或<code>Array</code>，就必须使用工厂模式来返回初始值，即<code>default</code>为一个Function</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 获取某个Prop的默认值。</span></span><br><span class="line"><span class="comment"> * 注意引用类型要使用工厂模式，然后执行返回</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getPropDefaultValue</span>(<span class="params">vm: ?Component, prop: PropOptions, key: <span class="built_in">string</span></span>): <span class="title">any</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 没有设置default，则为undefined</span></span><br><span class="line">  <span class="keyword">if</span> (!hasOwn(prop, <span class="string">'default'</span>)) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">undefined</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> def = prop.default</span><br><span class="line">  <span class="comment">// 提示Object和Array要用工厂模式来生成，例如 ()=&gt;[]</span></span><br><span class="line">  <span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span> &amp;&amp; isObject(def)) &#123;</span><br><span class="line">    warn(</span><br><span class="line">      <span class="string">'Invalid default value for prop "'</span> + key + <span class="string">'": '</span> +</span><br><span class="line">      <span class="string">'Props with type Object/Array must use a factory function '</span> +</span><br><span class="line">      <span class="string">'to return the default value.'</span>,</span><br><span class="line">      vm,</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 如果一开始propsData[key]为undefined，直接返回_props[key]，防止触发watcher</span></span><br><span class="line">  <span class="keyword">if</span> (vm &amp;&amp; vm.$options.propsData &amp;&amp;</span><br><span class="line">    vm.$options.propsData[key] === <span class="literal">undefined</span> &amp;&amp;</span><br><span class="line">    vm._props[key] !== <span class="literal">undefined</span></span><br><span class="line">  ) &#123;</span><br><span class="line">    <span class="keyword">return</span> vm._props[key]</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 针对引用类型的工厂模式，执行后返回结果</span></span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">typeof</span> def === <span class="string">'function'</span> &amp;&amp; getType(prop.type) !== <span class="string">'Function'</span></span><br><span class="line">    ? def.call(vm)</span><br><span class="line">    : def</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="检查值是否有效（type检查与validator检查）"><a href="#检查值是否有效（type检查与validator检查）" class="headerlink" title="检查值是否有效（type检查与validator检查）"></a>检查值是否有效（type检查与validator检查）</h3><p>检查输入的值是否符合<code>type</code>中声明的类型，以及能否通过定制的<code>validator</code></p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 断言某个prop是否有效，隐含了type和validator的检查</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">assertProp</span>(<span class="params">prop: PropOptions, name: <span class="built_in">string</span>, value: <span class="built_in">any</span>, vm: ?Component, absent: <span class="built_in">boolean</span></span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 声明了required却没有使用的，发出警告</span></span><br><span class="line">  <span class="keyword">if</span> (prop.required &amp;&amp; absent) &#123;</span><br><span class="line">    warn(</span><br><span class="line">      <span class="string">'Missing required prop: "'</span> + name + <span class="string">'"'</span>,</span><br><span class="line">      vm,</span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (value == <span class="literal">null</span> &amp;&amp; !prop.required) &#123;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">let</span> <span class="keyword">type</span> = prop.type</span><br><span class="line">  <span class="keyword">let</span> valid = !<span class="keyword">type</span> || <span class="keyword">type</span> === <span class="literal">true</span></span><br><span class="line">  <span class="keyword">const</span> expectedTypes = []</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 检查每个类型，查看value是否符合其中一个</span></span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">type</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">Array</span>.isArray(<span class="keyword">type</span>)) &#123;</span><br><span class="line">      <span class="keyword">type</span> = [<span class="keyword">type</span>]</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="keyword">type</span>.length &amp;&amp; !valid; i++) &#123;</span><br><span class="line">      <span class="keyword">const</span> assertedType = assertType(value, <span class="keyword">type</span>[i])</span><br><span class="line">      expectedTypes.push(assertedType.expectedType || <span class="string">''</span>)</span><br><span class="line">      valid = assertedType.valid</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 类型不合法，发出警告</span></span><br><span class="line">  <span class="keyword">if</span> (!valid) &#123;</span><br><span class="line">    warn(</span><br><span class="line">      <span class="string">`Invalid prop: type check failed for prop "<span class="subst">$&#123;name&#125;</span>".`</span> +</span><br><span class="line">      <span class="string">` Expected <span class="subst">$&#123;expectedTypes.map(capitalize).join(', ')&#125;</span>`</span> +</span><br><span class="line">      <span class="string">`, got <span class="subst">$&#123;toRawType(value)&#125;</span>.`</span>,</span><br><span class="line">      vm,</span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 套用validator，检查value是否合法</span></span><br><span class="line">  <span class="keyword">const</span> validator = prop.validator</span><br><span class="line">  <span class="keyword">if</span> (validator) &#123;</span><br><span class="line">    <span class="keyword">if</span> (!validator(value)) &#123;</span><br><span class="line">      warn(</span><br><span class="line">        <span class="string">'Invalid prop: custom validator check failed for prop "'</span> + name + <span class="string">'".'</span>,</span><br><span class="line">        vm,</span><br><span class="line">      )</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 检查value是否符合某个类型</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">const</span> simpleCheckRE = <span class="regexp">/^(String|Number|Boolean|Function|Symbol)$/</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">assertType</span>(<span class="params">value: <span class="built_in">any</span>, <span class="keyword">type</span>: <span class="built_in">Function</span></span>): </span>&#123;</span><br><span class="line">  valid: <span class="built_in">boolean</span>;</span><br><span class="line">  expectedType: <span class="built_in">string</span>;</span><br><span class="line">&#125; &#123;</span><br><span class="line">  <span class="keyword">let</span> valid</span><br><span class="line">  <span class="keyword">const</span> expectedType = getType(<span class="keyword">type</span>)</span><br><span class="line">  <span class="comment">// 基本类型的处理</span></span><br><span class="line">  <span class="keyword">if</span> (simpleCheckRE.test(expectedType)) &#123;</span><br><span class="line">    <span class="keyword">const</span> t = <span class="keyword">typeof</span> value</span><br><span class="line">    valid = t === expectedType.toLowerCase()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 也有可能是基本类型构造器的实例</span></span><br><span class="line">    <span class="keyword">if</span> (!valid &amp;&amp; t === <span class="string">'object'</span>) &#123;</span><br><span class="line">      valid = value <span class="keyword">instanceof</span> <span class="keyword">type</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 如果是Object，则检查value是否为纯Object</span></span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">if</span> (expectedType === <span class="string">'Object'</span>) &#123;</span><br><span class="line">    valid = isPlainObject(value)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 如果是Array，检查value是否为Array</span></span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">if</span> (expectedType === <span class="string">'Array'</span>) &#123;</span><br><span class="line">    valid = <span class="built_in">Array</span>.isArray(value)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 如果都不是，检查value是否为type的实例</span></span><br><span class="line">  <span class="keyword">else</span> &#123;</span><br><span class="line">    valid = value <span class="keyword">instanceof</span> <span class="keyword">type</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    valid,</span><br><span class="line">    expectedType,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="核心：检查某个Prop，如果合法则将其加入observe并返回，否则发出警告"><a href="#核心：检查某个Prop，如果合法则将其加入observe并返回，否则发出警告" class="headerlink" title="核心：检查某个Prop，如果合法则将其加入observe并返回，否则发出警告"></a>核心：检查某个Prop，如果合法则将其加入observe并返回，否则发出警告</h3><p>该方法将提供给Component使用，用于验证Prop</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 检查是否符合prop描述，获得默认值，然后加入观察</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">validateProp</span>(<span class="params">key: <span class="built_in">string</span>, propOptions: <span class="built_in">Object</span>, propsData: <span class="built_in">Object</span>, vm?: Component</span>): <span class="title">any</span> </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> prop = propOptions[key]</span><br><span class="line">  <span class="comment">// 检查该prop是否存在</span></span><br><span class="line">  <span class="keyword">const</span> absent = !hasOwn(propsData, key)</span><br><span class="line">  <span class="keyword">let</span> value = propsData[key]</span><br><span class="line">  <span class="comment">// 在prop.type中寻找Boolean类型对应的索引</span></span><br><span class="line">  <span class="keyword">const</span> booleanIndex = getTypeIndex(<span class="built_in">Boolean</span>, prop.type)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 如果有Boolean类型</span></span><br><span class="line">  <span class="keyword">if</span> (booleanIndex &gt; <span class="number">-1</span>) &#123;</span><br><span class="line">    <span class="comment">// default没设置，默认为false</span></span><br><span class="line">    <span class="keyword">if</span> (absent &amp;&amp; !hasOwn(prop, <span class="string">'default'</span>)) &#123;</span><br><span class="line">      value = <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 带有string，但是Boolean靠前，将空字符串转为true</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (value === <span class="string">''</span> || value === hyphenate(key)) &#123;</span><br><span class="line">      <span class="keyword">const</span> stringIndex = getTypeIndex(<span class="built_in">String</span>, prop.type)</span><br><span class="line">      <span class="keyword">if</span> (stringIndex &lt; <span class="number">0</span> || booleanIndex &lt; stringIndex) &#123;</span><br><span class="line">        value = <span class="literal">true</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 检查默认值</span></span><br><span class="line">  <span class="keyword">if</span> (value === <span class="literal">undefined</span>) &#123;</span><br><span class="line">    <span class="comment">// 获取默认值，主要是针对引用类型的处理</span></span><br><span class="line">    value = getPropDefaultValue(vm, prop, key)</span><br><span class="line">    <span class="comment">// 将该Prop纳入观察</span></span><br><span class="line">    <span class="keyword">const</span> prevShouldObserve = shouldObserve</span><br><span class="line">    toggleObserving(<span class="literal">true</span>)</span><br><span class="line">    observe(value)</span><br><span class="line">    toggleObserving(prevShouldObserve)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 非生产环境下，验证该prop的类型、required、validator，对有问题的地方进行断言</span></span><br><span class="line">  <span class="keyword">if</span> (</span><br><span class="line">    process.env.NODE_ENV !== <span class="string">'production'</span> &amp;&amp;</span><br><span class="line">    <span class="comment">// Weex下跳过检查</span></span><br><span class="line">    !(__WEEX__ &amp;&amp; isObject(value) &amp;&amp; (<span class="string">'@binding'</span> <span class="keyword">in</span> value))</span><br><span class="line">  ) &#123;</span><br><span class="line">    assertProp(prop, key, value, vm, absent)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> value</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="其他的helper函数"><a href="#其他的helper函数" class="headerlink" title="其他的helper函数"></a>其他的helper函数</h3><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 使用类型构造器的函数名来检查类型</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">// 调取函数名（或是class类名）</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getType</span>(<span class="params">fn</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> match = fn &amp;&amp; fn.toString().match(<span class="regexp">/^\s*function (\w+)/</span>)</span><br><span class="line">  <span class="keyword">return</span> match ? match[<span class="number">1</span>] : <span class="string">''</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 检查类名是否相同，从而确认为相同类</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">isSameType</span>(<span class="params">a, b</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> getType(a) === getType(b)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取指定类型的索引</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getTypeIndex</span>(<span class="params"><span class="keyword">type</span>, expectedTypes</span>): <span class="title">number</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 如果expectedTypes不是Array，也就是只传入了一个类型，检查类名</span></span><br><span class="line">  <span class="keyword">if</span> (!<span class="built_in">Array</span>.isArray(expectedTypes)) &#123;</span><br><span class="line">    <span class="keyword">return</span> isSameType(expectedTypes, <span class="keyword">type</span>) ? <span class="number">0</span> : <span class="number">-1</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 如果expectedTypes是Array，遍历expectedTypes来查找type</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>, len = expectedTypes.length; i &lt; len; i++) &#123;</span><br><span class="line">    <span class="keyword">if</span> (isSameType(expectedTypes[i], <span class="keyword">type</span>)) &#123;</span><br><span class="line">      <span class="keyword">return</span> i</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">-1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+
+    
+        <div class="post-tags">
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <a href="/tags/技术原理/">#技术原理</a>
+        </div>
+    
+
+    <!-- Comments -->
+    
+
+</div>
+        </section>
+
+    </div>
+</div>
+
+
+</div>
+
+<!-- Footer -->
+<div class="push"></div>
+
+<footer class="footer-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
+                <h2>About</h2>
+                <p>
+                    This theme was developed by <a href="https://github.com/klugjo">Jonathan Klughertz</a>. The source code is available on Github. Create Websites. Make Magic.
+                </p>
+            </div>
+            
+    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/6.bindActionCreators/">Redux源码解析06--bindActionCr</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/5.combineReducers/">Redux源码解析05--combineReduc</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/4.applyMiddleware/">Redux源码解析04--applyMiddlew</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/3.compose/">Redux源码解析03--compose</a>
+            </li>
+            
+        </ul>
+    </div>
+
+
+
+            
+<div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 footer-categories">
+    <h2>Categories</h2>
+    <ul>
+        
+        <li>
+            <a class="footer-post" href="/categories/源码分析/">源码分析</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/学习计划/">学习计划</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/tutorial/">tutorial</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/前端开发/">前端开发</a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="list-inline footer-social-icons">
+                    
+                    <li class="list-inline-item">
+                        <a href="https://github.com/klugjo/hexo-theme-alpha-dust">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-github"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://twitter.com/?lang=en">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-twitter"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.facebook.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-facebook"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.instagram.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-instagram"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://dribbble.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-dribbble"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://plus.google.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-google-plus"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.behance.net/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-behance"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://500px.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-500px"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="mailto:test@example.com">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-envelope-o"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="\#">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-rss"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="footer-copyright">
+                    @Untitled. All right reserved | Design & Hexo <a href="http://www.codeblocq.com/">Jonathan Klughertz</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- After footer scripts -->
+
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Tween Max -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/main.js"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>

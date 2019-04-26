@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="还没想好写什么">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="attax1994">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="Attax1994">
+    
+
+    <!--Open Graph Description-->
+    
+        <meta property="og:description" content="还没想好写什么">
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="Attax1994">
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="website">
+    
+
+    <!--Page Cover-->
+    
+
+    <meta name="twitter:card" content="summary">
+    
+
+    <!-- Title -->
+    
+    <title>page - Attax1994</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Google Analytics -->
+    
+
+
+</head>
+
+
+<body>
+
+<div class="bg-gradient"></div>
+<div class="bg-pattern"></div>
+
+<!-- Menu -->
+<!--Menu Links and Overlay-->
+<div class="menu-bg">
+    <div class="menu-container">
+        <ul>
+            
+            <li class="menu-item">
+                <a href="/">
+                    Home
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/archives">
+                    Archives
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="https://attax1994.github.io/Resume/">
+                    About
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+<!--Hamburger Icon-->
+<nav>
+    <a href="#menu"></a>
+</nav>
+
+<div class="container">
+
+    <!-- Main Content -->
+    <div class="row">
+    <div class="col-sm-12">
+
+        <!--Title and Logo-->
+        <header>
+    <div class="logo">
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
+        
+            <h1 id="main-title" class="title">Attax1994</h1>
+        
+    </div>
+</header>
+
+        <section class="main">
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
+            <a href="/2019/04/26/2019/vue/Vue源码解析13--core.observer-观察者/">
+                Vue源码解析13--core.observer-观察者
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2019-04-26</span>
+            
+            
+            
+                <span class="category">
+                    <a href="/categories/前端开发/">前端开发</a>
+                </span>
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <h2 id="Observer观察者"><a href="#Observer观察者" class="headerlink" title="Observer观察者"></a>Observer观察者</h2><p>Vue要定义一个响应式的属性，本质上是改造其getter/setter。</p>
+<p>对于getter，具体的操作是：</p>
+<ol>
+<li>执行原本的getter（如果用户做了定义），获得value。</li>
+<li>如果是响应式的属性，执行依赖收集，即将该<code>dep</code>加入<code>watcher.deps</code>中，将<code>watcher</code>加入<code>dep.subs</code>中，交叉引用（当然也要做查重，避免加入重复的引用）。</li>
+<li>深度（deep）模式下，它的成员也有observer，执行它对应的依赖收集。成员为Array的情况下，遍历它，并执行依赖收集。</li>
+<li>返回 value。</li>
+</ol>
+<p>对于setter，具体的操作是：</p>
+<ol>
+<li>先触发getter，获得上一次的值，并收集依赖。</li>
+<li>对比当前值和上一次的值，如果没变化，直接返回。</li>
+<li>如果发生了变化，执行原本的setter（如果用户做了定义），完成赋值操作。</li>
+<li>深度（deep）模式下，尝试为成员创建Observer。</li>
+<li><strong>操作它的<code>dep</code>执行<code>notify()</code>方法，进而触发该<code>dep</code>下所有<code>watcher</code>的<code>update()</code>方法</strong>。</li>
+</ol>
+<p>对于一个vm的更新，就可以描述为（假设修改了<code>$data</code>中的某个属性值）：</p>
+<ol>
+<li>触发该属性改造后的setter。</li>
+<li>setter中触发getter进行依赖收集，确认传入的值和之前不同，先执行原来定义的setter，然后触发这个属性的<code>dep</code>（在<code>defineReactive()</code>的闭包中创建）发出<code>notify()</code>更新通知。</li>
+<li>根据该<code>dep</code>中<code>dep.subs</code>的记录，触发所有订阅这个<code>dep</code>的<code>watcher</code>的<code>update</code>方法。</li>
+<li>在<code>watcher.update()</code>中判断执行类型，通常<code>$data</code>属性改变触发的是由<code>scheduler</code>负责的<code>queueWatcher(this)</code>异步更新。</li>
+<li><code>scheduler</code>将这个<code>watcher</code>加入更新队列，<code>nextTick()</code>中flush整个队列，调用<code>watcher.run()</code>来执行更新。</li>
+<li><code>watcher.run()</code> 中执行该<code>watcher</code>的<code>watcher.get()</code>方法。</li>
+<li><code>watcher.get()</code>中，执行<code>this.getter()</code>，即在<code>lifecycle</code>中<code>mountComponent()</code>在创建这个Watcher实例时，传入的<code>updateComponent()</code>方法，触发<code>vm._update(vm._render(), hydrating)</code>。</li>
+<li><code>vm._render()</code>负责生成新的<code>vnode</code>，<code>vm._update()</code>对比新<code>vnode</code>和原<code>vnode</code>，执行<code>patch</code>算法，并将其挂载到组件的实例上去，更新完成。</li>
+</ol>
+<h3 id="建模"><a href="#建模" class="headerlink" title="建模"></a>建模</h3><p>对于整个Observer模块，共有四个核心概念</p>
+<ol>
+<li><code>Observer</code>类，附着到每个被观察的对象，作为其<code>__ob__</code>属性，负责改造其属性为<code>getter/setter</code>形式。<code>dep</code>属性为其<code>Dep</code>，用于收集依赖并发出更新通知。</li>
+<li><code>Dep</code>类，负责依赖收集和发布更新通知，可以让多个watcher去订阅它。它记录了所有订阅它的watcher，放在<code>subs</code>中。其静态属性<code>Dep.target</code>用于指示当前正在执行的watcher。</li>
+<li><code>Watcher</code>类，解析getter表达式，收集依赖，并且在getter所指向的值发生改变时触发回调。<code>computedWatcher</code>放在<code>vm._computedWatchers</code>中，其他watcher放在<code>vm._watchers</code>中，vm中负责render的watcher为<code>vm._watcher</code>。</li>
+<li><code>Scheduler</code>调度器，用于记录当前tick下需要进行异步更新的watcher队列，调度这些watcher的异步更新，在<code>nexttick()</code>中执行。执行完成后，触发对应vm的<code>activated</code>和<code>updated</code>钩子，并清理现场。</li>
+</ol>
+
+        </div>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
+            <a href="/2019/04/26/2019/vue/Vue源码解析12--core.instance.proxy-ProxyAPI的尝试/">
+                Vue源码解析12--core.instance.proxy-ProxyAPI的尝试
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2019-04-26</span>
+            
+            
+            
+                <span class="category">
+                    <a href="/categories/前端开发/">前端开发</a>
+                </span>
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <h2 id="Proxy-API"><a href="#Proxy-API" class="headerlink" title="Proxy API"></a>Proxy API</h2><p>在非Prod环境下，使用ES6的Proxy API来做一些开发时的行为拦截。</p>
+<p>包括拦截对内建值的修改。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> initProxy</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> allowedGlobals = makeMap(</span><br><span class="line">    <span class="string">'Infinity,undefined,NaN,isFinite,isNaN,'</span> +</span><br><span class="line">    <span class="string">'parseFloat,parseInt,decodeURI,decodeURIComponent,encodeURI,encodeURIComponent,'</span> +</span><br><span class="line">    <span class="string">'Math,Number,Date,Array,Object,Boolean,String,RegExp,Map,Set,JSON,Intl,'</span> +</span><br><span class="line">    <span class="string">'require'</span> <span class="comment">// for Webpack/Browserify</span></span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> warnNonPresent = <span class="function">(<span class="params">target, key</span>) =&gt;</span> &#123;</span><br><span class="line">    warn(</span><br><span class="line">      <span class="string">`Property or method "<span class="subst">$&#123;key&#125;</span>" is not defined on the instance but `</span> +</span><br><span class="line">      <span class="string">'referenced during render. Make sure that this property is reactive, '</span> +</span><br><span class="line">      <span class="string">'either in the data option, or for class-based components, by '</span> +</span><br><span class="line">      <span class="string">'initializing the property. '</span> +</span><br><span class="line">      <span class="string">'See: https://vuejs.org/v2/guide/reactivity.html#Declaring-Reactive-Properties.'</span>,</span><br><span class="line">      target</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 指示浏览器环境是否支持Proxy</span></span><br><span class="line">  <span class="keyword">const</span> hasProxy =</span><br><span class="line">    <span class="keyword">typeof</span> Proxy !== <span class="string">'undefined'</span> &amp;&amp; isNative(Proxy)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 支持Proxy情况下，对config.keyCodes的set进行拦截，不允许对Vue内建的一些按键值进行修改</span></span><br><span class="line">  <span class="keyword">if</span> (hasProxy) &#123;</span><br><span class="line">    <span class="keyword">const</span> isBuiltInModifier = makeMap(<span class="string">'stop,prevent,self,ctrl,shift,alt,meta,exact'</span>)</span><br><span class="line">    config.keyCodes = <span class="keyword">new</span> Proxy(config.keyCodes, &#123;</span><br><span class="line">      <span class="keyword">set</span> (target, key, value) &#123;</span><br><span class="line">        <span class="keyword">if</span> (isBuiltInModifier(key)) &#123;</span><br><span class="line">          warn(<span class="string">`Avoid overwriting built-in modifier in config.keyCodes: .<span class="subst">$&#123;key&#125;</span>`</span>)</span><br><span class="line">          <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          target[key] = value</span><br><span class="line">          <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> hasHandler = &#123;</span><br><span class="line">    has (target, key) &#123;</span><br><span class="line">      <span class="keyword">const</span> has = key <span class="keyword">in</span> target</span><br><span class="line">      <span class="keyword">const</span> isAllowed = allowedGlobals(key) || (<span class="keyword">typeof</span> key === <span class="string">'string'</span> &amp;&amp; key.charAt(<span class="number">0</span>) === <span class="string">'_'</span>)</span><br><span class="line">      <span class="keyword">if</span> (!has &amp;&amp; !isAllowed) &#123;</span><br><span class="line">        warnNonPresent(target, key)</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> has || !isAllowed</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> getHandler = &#123;</span><br><span class="line">    <span class="keyword">get</span> (target, key) &#123;</span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">typeof</span> key === <span class="string">'string'</span> &amp;&amp; !(key <span class="keyword">in</span> target)) &#123;</span><br><span class="line">        warnNonPresent(target, key)</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> target[key]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  initProxy = <span class="function"><span class="keyword">function</span> <span class="title">initProxy</span> (<span class="params">vm</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (hasProxy) &#123;</span><br><span class="line">      <span class="comment">// 选择使用getHandler还是hasHandler</span></span><br><span class="line">      <span class="keyword">const</span> options = vm.$options</span><br><span class="line">      <span class="keyword">const</span> handlers = options.render &amp;&amp; options.render._withStripped</span><br><span class="line">        ? getHandler</span><br><span class="line">        : hasHandler</span><br><span class="line">      vm._renderProxy = <span class="keyword">new</span> Proxy(vm, handlers)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      vm._renderProxy = vm</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+        </div>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
+            <a href="/2019/04/26/2019/vue/Vue源码解析11--core.instance.inject-上层依赖/">
+                Vue源码解析11--core.instance.inject-上层依赖
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2019-04-26</span>
+            
+            
+            
+                <span class="category">
+                    <a href="/categories/前端开发/">前端开发</a>
+                </span>
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <h2 id="依赖注入"><a href="#依赖注入" class="headerlink" title="依赖注入"></a>依赖注入</h2><p><code>provide</code>和<code>inject</code>需要配套使用。</p>
+<p>provide用于高阶组件向所有内部组件注入依赖，依赖对象保存在高阶组件的<code>vm._provided</code>字段上。</p>
+<p>inject用于子组件从最近的一级上获得对应依赖。</p>
+<h3 id="initProvide"><a href="#initProvide" class="headerlink" title="initProvide"></a><code>initProvide</code></h3><p>初始化provide，记录在vm._provided上。provide可以传入function，需要调用一下获得结果。</p>
+<p>依赖的名称一般为string，也可以使用Symbol，但是需要浏览器环境的支持。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">initProvide</span>(<span class="params">vm: Component</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> provide = vm.$options.provide</span><br><span class="line">  <span class="keyword">if</span> (provide) &#123;</span><br><span class="line">    vm._provided = <span class="keyword">typeof</span> provide === <span class="string">'function'</span></span><br><span class="line">      ? provide.call(vm)</span><br><span class="line">      : provide</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="initInjections"><a href="#initInjections" class="headerlink" title="initInjections"></a><code>initInjections</code></h3><p>初始化injections。</p>
+<p>对于每个依赖，从组件自身开始，遵循就近原则，逐层向上，在上级组件的<code>_provided</code>属性中寻找对应依赖。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">initInjections</span>(<span class="params">vm: Component</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 寻找依赖</span></span><br><span class="line">  <span class="keyword">const</span> result = resolveInject(vm.$options.inject, vm)</span><br><span class="line">  <span class="keyword">if</span> (result) &#123;</span><br><span class="line">    toggleObserving(<span class="literal">false</span>)</span><br><span class="line">    <span class="comment">// 将每个依赖改造为响应式的，并提示不要进行直接的修改</span></span><br><span class="line">    <span class="built_in">Object</span>.keys(result).forEach(<span class="function"><span class="params">key</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span>) &#123;</span><br><span class="line">        defineReactive(vm, key, result[key], <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">          warn(</span><br><span class="line">            <span class="string">`Avoid mutating an injected value directly since the changes will be `</span> +</span><br><span class="line">            <span class="string">`overwritten whenever the provided component re-renders. `</span> +</span><br><span class="line">            <span class="string">`injection being mutated: "<span class="subst">$&#123;key&#125;</span>"`</span>,</span><br><span class="line">            vm,</span><br><span class="line">          )</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        defineReactive(vm, key, result[key])</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">    toggleObserving(<span class="literal">true</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 寻找对应的依赖</span></span><br><span class="line"><span class="comment"> * @param inject</span></span><br><span class="line"><span class="comment"> * @param vm</span></span><br><span class="line"><span class="comment"> * @return &#123;any&#125;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">resolveInject</span>(<span class="params">inject: <span class="built_in">any</span>, vm: Component</span>): ?<span class="title">Object</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (inject) &#123;</span><br><span class="line">    <span class="keyword">const</span> result = <span class="built_in">Object</span>.create(<span class="literal">null</span>)</span><br><span class="line">    <span class="comment">// 过滤出可枚举的属性</span></span><br><span class="line">    <span class="keyword">const</span> keys = hasSymbol</span><br><span class="line">      ? Reflect.ownKeys(inject).filter(<span class="function"><span class="params">key</span> =&gt;</span> <span class="built_in">Object</span>.getOwnPropertyDescriptor(inject, key).enumerable)</span><br><span class="line">      : <span class="built_in">Object</span>.keys(inject)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; keys.length; i++) &#123;</span><br><span class="line">      <span class="keyword">const</span> key = keys[i]</span><br><span class="line">      <span class="keyword">const</span> provideKey = inject[key].from</span><br><span class="line">      <span class="keyword">let</span> source = vm</span><br><span class="line">      <span class="comment">/**</span></span><br><span class="line"><span class="comment">       * 从自身开始，遵循就近原则，逐层向上，在上级组件的_provided属性中寻找对应依赖</span></span><br><span class="line"><span class="comment">       */</span></span><br><span class="line">      <span class="keyword">while</span> (source) &#123;</span><br><span class="line">        <span class="keyword">if</span> (source._provided &amp;&amp; hasOwn(source._provided, provideKey)) &#123;</span><br><span class="line">          result[key] = source._provided[provideKey]</span><br><span class="line">          <span class="keyword">break</span></span><br><span class="line">        &#125;</span><br><span class="line">        source = source.$parent</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="comment">/**</span></span><br><span class="line"><span class="comment">       * 如果没找到，检查该依赖有没有设置default，如有则使用default</span></span><br><span class="line"><span class="comment">       * 如果没有default，就要提示没有找到依赖</span></span><br><span class="line"><span class="comment">       */</span></span><br><span class="line">      <span class="keyword">if</span> (!source) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="string">'default'</span> <span class="keyword">in</span> inject[key]) &#123;</span><br><span class="line">          <span class="keyword">const</span> provideDefault = inject[key].default</span><br><span class="line">          result[key] = <span class="keyword">typeof</span> provideDefault === <span class="string">'function'</span></span><br><span class="line">            ? provideDefault.call(vm)</span><br><span class="line">            : provideDefault</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span>) &#123;</span><br><span class="line">          warn(<span class="string">`Injection "<span class="subst">$&#123;key&#125;</span>" not found`</span>, vm)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        </div>
+    
+
+</div>
+            
+        </section>
+    </div>
+</div>
+
+
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="wrap-pagination">
+                <a class href="/page/4/">
+                    <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                </a>
+                <a class href="/page/6/">
+                    <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+
+
+</div>
+
+<!-- Footer -->
+<div class="push"></div>
+
+<footer class="footer-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
+                <h2>About</h2>
+                <p>
+                    This theme was developed by <a href="https://github.com/klugjo">Jonathan Klughertz</a>. The source code is available on Github. Create Websites. Make Magic.
+                </p>
+            </div>
+            
+    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/6.bindActionCreators/">Redux源码解析06--bindActionCr</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/5.combineReducers/">Redux源码解析05--combineReduc</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/4.applyMiddleware/">Redux源码解析04--applyMiddlew</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/3.compose/">Redux源码解析03--compose</a>
+            </li>
+            
+        </ul>
+    </div>
+
+
+
+            
+<div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 footer-categories">
+    <h2>Categories</h2>
+    <ul>
+        
+        <li>
+            <a class="footer-post" href="/categories/源码分析/">源码分析</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/学习计划/">学习计划</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/tutorial/">tutorial</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/前端开发/">前端开发</a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="list-inline footer-social-icons">
+                    
+                    <li class="list-inline-item">
+                        <a href="https://github.com/klugjo/hexo-theme-alpha-dust">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-github"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://twitter.com/?lang=en">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-twitter"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.facebook.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-facebook"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.instagram.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-instagram"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://dribbble.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-dribbble"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://plus.google.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-google-plus"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.behance.net/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-behance"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://500px.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-500px"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="mailto:test@example.com">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-envelope-o"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="\#">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-rss"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="footer-copyright">
+                    @Untitled. All right reserved | Design & Hexo <a href="http://www.codeblocq.com/">Jonathan Klughertz</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- After footer scripts -->
+
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Tween Max -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/main.js"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>

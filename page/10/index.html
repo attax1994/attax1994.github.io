@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="还没想好写什么">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="attax1994">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="Attax1994">
+    
+
+    <!--Open Graph Description-->
+    
+        <meta property="og:description" content="还没想好写什么">
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="Attax1994">
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="website">
+    
+
+    <!--Page Cover-->
+    
+
+    <meta name="twitter:card" content="summary">
+    
+
+    <!-- Title -->
+    
+    <title>page - Attax1994</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Google Analytics -->
+    
+
+
+</head>
+
+
+<body>
+
+<div class="bg-gradient"></div>
+<div class="bg-pattern"></div>
+
+<!-- Menu -->
+<!--Menu Links and Overlay-->
+<div class="menu-bg">
+    <div class="menu-container">
+        <ul>
+            
+            <li class="menu-item">
+                <a href="/">
+                    Home
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/archives">
+                    Archives
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="https://attax1994.github.io/Resume/">
+                    About
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+<!--Hamburger Icon-->
+<nav>
+    <a href="#menu"></a>
+</nav>
+
+<div class="container">
+
+    <!-- Main Content -->
+    <div class="row">
+    <div class="col-sm-12">
+
+        <!--Title and Logo-->
+        <header>
+    <div class="logo">
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
+        
+            <h1 id="main-title" class="title">Attax1994</h1>
+        
+    </div>
+</header>
+
+        <section class="main">
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
+            <a href="/2018/04/02/2018/Vue的依赖注入/">
+                Vue的依赖注入
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-04-02</span>
+            
+            
+            
+                <span class="category">
+                    <a href="/categories/前端开发/">前端开发</a>
+                </span>
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <h2 id="依赖注入"><a href="#依赖注入" class="headerlink" title="依赖注入"></a>依赖注入</h2><h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>在后端领域，依赖注入（DI），控制反转（IoC）等概念是老生常谈的设计模式，它们用于解决一系列的面向对象编程问题。</p>
+<p>对于依赖注入而言，需要遵循依赖倒转原则(Dependence Inversion Priciple, DIP)：</p>
+<ul>
+<li>高层模块不应该依赖低层模块。两个都应该依赖抽象（提取共性，描述特性，模块间解耦）</li>
+<li>抽象不应该依赖细节，细节应该依赖抽象（抽象服务类置于底层，细节服务类继承抽象服务类）</li>
+<li>针对接口编程，不要针对实现编程（遵循SOLID原则，多态、泛型编程等）</li>
+</ul>
+<h3 id="为什么需要依赖注入"><a href="#为什么需要依赖注入" class="headerlink" title="为什么需要依赖注入"></a>为什么需要依赖注入</h3><p>前端工程化、模块化的时间相比于后端而言还是比较短的。在此之前，前端的设计方式主要是每个页面都有其对应的JS文件，分别负责这个页面上的交互操作。</p>
+<p>然而随着项目的越来越大，这样的文件结构也显得越来越臃肿，特别是由于很多功能的共性没有提取出来，形成模块化，因而产生了很多重复性的代码。这样的结构存在很大的弊端：</p>
+<ul>
+<li>一旦需要一些共性方面的修改，就需要逐个文件去检查，修改对应代码，费时费力</li>
+<li>重复性的代码增大了项目的体积，代码却不能复用</li>
+<li>每次引入一大堆JS文件，需要执行后存入内存方可使用，效率低下</li>
+</ul>
+<p>因此，急需一种机制来负责管理这些可复用的<strong>底层的操作，单例服务以及共有的特性</strong>。</p>
+<h3 id="传统的依赖注入"><a href="#传统的依赖注入" class="headerlink" title="传统的依赖注入"></a>传统的依赖注入</h3><p>传统的依赖注入采取<code>AMD</code>、<code>CMD</code>、<code>CommanJS</code>和<code>UMD</code>等模式。</p>
+<p>一个AMD的依赖管理器可以大致理解为：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> ModuleManager = (<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 用于记录模块，作用类似于Map</span></span><br><span class="line">  <span class="keyword">var</span> _modules = &#123;&#125;;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 根据模块名称，获取对应的模块（服务类实例）</span></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">getModule</span>(<span class="params">name</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> _modules[name] || &#123;&#125;;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 定义一个模块</span></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">define</span>(<span class="params">name, deps, fn</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">typeof</span> name !== <span class="string">'string'</span>) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">TypeError</span>(<span class="string">'name should be string.'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (_modules[name]) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'This module has been already declared.'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!deps <span class="keyword">instanceof</span> <span class="built_in">Array</span>) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">TypeError</span>(<span class="string">'deps should be Array&lt;String&gt;.'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!fn <span class="keyword">instanceof</span> <span class="built_in">Function</span>) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">TypeError</span>(<span class="string">'fn should be function.'</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 导出它所依赖的模块</span></span><br><span class="line">    <span class="keyword">var</span> depsModules = [];</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>, len = deps.length; i &lt; len; i++) &#123;</span><br><span class="line">      depsModules.push(getModule(deps[i]));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 注入依赖，并得到返回的模块，写入Map</span></span><br><span class="line">    _modules[name] = fn.apply(<span class="literal">null</span>, depsModules);</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 获取一系列的依赖，从而使用它们进行操作</span></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">require</span>(<span class="params">deps, fn</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!deps <span class="keyword">instanceof</span> <span class="built_in">Array</span>) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">TypeError</span>(<span class="string">'deps should be Array&lt;String&gt;.'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!fn <span class="keyword">instanceof</span> <span class="built_in">Function</span>) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">TypeError</span>(<span class="string">'fn should be function.'</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 导出它所依赖的模块</span></span><br><span class="line">    <span class="keyword">var</span> depsModules = [];</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>, len = deps.length; i &lt; len; i++) &#123;</span><br><span class="line">      depsModules.push(getModule(deps[i]));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 执行回调</span></span><br><span class="line">    fn.apply(<span class="literal">null</span>, depsModules);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 暴露define和require两个方法</span></span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    define: define,</span><br><span class="line">    <span class="built_in">require</span>: <span class="built_in">require</span>,</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+<p>通过这段代码可以看出，传统的依赖注入本质上是把依赖存在内存中，然后根据其名称导出，再注入到回调函数中供其运行。</p>
+<h3 id="更好的实践"><a href="#更好的实践" class="headerlink" title="更好的实践"></a>更好的实践</h3><p><code>Angular2+</code>内置了依赖注入的机制，利用<code>@Injectable()</code>来修饰一个服务类。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">@Injectable()</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">SomeService</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span> () &#123;&#125;</span><br><span class="line">  </span><br><span class="line">  dosth () &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后在Component或Module的<code>providers</code>属性中去声明提供的服务类，从而在这一层生成一个实例。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">@Component(&#123;</span><br><span class="line">  selector: <span class="string">'...'</span>,</span><br><span class="line">  template: <span class="string">``</span>,</span><br><span class="line">  <span class="comment">// 需要注意，这是一个数组，可以导入数个依赖</span></span><br><span class="line">  providers: [SomeService],</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 在Module层导入也是可以的</span></span><br><span class="line">@NgModule(&#123;</span><br><span class="line">  imports: [],</span><br><span class="line">  exports: [],</span><br><span class="line">  declarations: [],</span><br><span class="line">  providers: [SomeService],</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>最后，在Component的<code>constructor</code>中，就可以将其作为依赖导入。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TemplateComponent</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(private _someService: SomeService) &#123;</span><br><span class="line">    <span class="keyword">this</span>._someService.dosth();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 其实转译为</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TemplateComponent</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 在构造的时候传入对应的依赖实例</span></span><br><span class="line">  <span class="keyword">constructor</span>(SomeService) &#123;</span><br><span class="line">    <span class="keyword">this</span>.SomeService = SomeService;</span><br><span class="line">    <span class="keyword">this</span>._someService = <span class="keyword">this</span>.SomeService;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于一个Component中使用的依赖，其寻径过程遵循就近使用的原则： </p>
+<ul>
+<li>首先寻找自身Component修饰器中是否有对应<code>provider</code></li>
+<li>自身没有，向上层父Component寻找</li>
+<li>父Component逐层向上，一直到其所在的Module层</li>
+<li>自身Module层没有，寻找所在Module的上层Component或Module</li>
+<li>一直到最高层的App.Component中都没有找到，说明该<code>provider</code>尚未注册，抛出错误</li>
+</ul>
+<p>需要注意的是，这些依赖本身就是一个个实例，所以如果其中有一些不能复用的属性（虽然从设计上而言，应当避免这种情况），应当在所操作的Component上新注册一个该服务的实例，从而达到属性不共享。</p>
+<h3 id="Vue中实现高复用的依赖注入"><a href="#Vue中实现高复用的依赖注入" class="headerlink" title="Vue中实现高复用的依赖注入"></a>Vue中实现高复用的依赖注入</h3><h4 id="1-简单粗暴法，Vue-use"><a href="#1-简单粗暴法，Vue-use" class="headerlink" title="1.简单粗暴法，Vue.use()"></a>1.简单粗暴法，Vue.use()</h4><p><code>Vue.use()</code>方法允许将具体的服务类实例挂载到全局对象的原型链上，调用时候直接去全局对象上寻找相应依赖。这种方法虽然不甚美观，而且随着项目越来越大，全局对象也会越来越臃肿，但确实是非常简单实现方式。</p>
+<h4 id="2-利用Vuex"><a href="#2-利用Vuex" class="headerlink" title="2.利用Vuex"></a>2.利用Vuex</h4><p>利用<code>Vuex.Store</code>的<code>Modules</code>属性，可以使用一个独特的<code>DependencyStore</code>来存放依赖。在此基础之上，可以实现模块的分类与分级，从而将其层级化，方便调用。</p>
+<h4 id="3-第三方库InversifyJS"><a href="#3-第三方库InversifyJS" class="headerlink" title="3.第三方库InversifyJS"></a>3.第三方库InversifyJS</h4><p><code>InversifyJS</code>的使用方式类似于Angular的依赖注入模式：</p>
+<p>创建声明</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 声明一系列的接口</span></span><br><span class="line"><span class="keyword">export</span> interface Warrior &#123;</span><br><span class="line">    fight(): string;</span><br><span class="line">    sneak(): string;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> interface Weapon &#123;</span><br><span class="line">    hit(): string;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> interface ThrowableWeapon &#123;</span><br><span class="line">    <span class="keyword">throw</span>(): string;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 将其打包后导出为一个模块</span></span><br><span class="line"><span class="keyword">const</span> TYPES = &#123;</span><br><span class="line">    Warrior: <span class="built_in">Symbol</span>.for(<span class="string">"Warrior"</span>),</span><br><span class="line">    Weapon: <span class="built_in">Symbol</span>.for(<span class="string">"Weapon"</span>),</span><br><span class="line">    ThrowableWeapon: <span class="built_in">Symbol</span>.for(<span class="string">"ThrowableWeapon"</span>)</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> &#123; TYPES &#125;;</span><br></pre></td></tr></table></figure>
+<p>编写实现</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 针对先前的声明，创建具体的实现类</span></span><br><span class="line">@injectable()</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Katana</span> <span class="title">implements</span> <span class="title">Weapon</span> </span>&#123;</span><br><span class="line">    public hit() &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"cut!"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@injectable()</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Shuriken</span> <span class="title">implements</span> <span class="title">ThrowableWeapon</span> </span>&#123;</span><br><span class="line">    public <span class="keyword">throw</span>() &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"hit!"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@injectable()</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Ninja</span> <span class="title">implements</span> <span class="title">Warrior</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    private _katana: Weapon;</span><br><span class="line">    private _shuriken: ThrowableWeapon;</span><br><span class="line"></span><br><span class="line">    public <span class="keyword">constructor</span>(</span><br><span class="line">	    @inject(TYPES.Weapon) katana: Weapon,</span><br><span class="line">	    @inject(TYPES.ThrowableWeapon) shuriken: ThrowableWeapon</span><br><span class="line">    ) &#123;</span><br><span class="line">        <span class="keyword">this</span>._katana = katana;</span><br><span class="line">        <span class="keyword">this</span>._shuriken = shuriken;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public fight() &#123; <span class="keyword">return</span> <span class="keyword">this</span>._katana.hit(); &#125;</span><br><span class="line">    public sneak() &#123; <span class="keyword">return</span> <span class="keyword">this</span>._shuriken.throw(); &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> &#123; Ninja, Katana, Shuriken &#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 也可以在服务类中注入其他的服务类</span></span><br><span class="line">@injectable()</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Ninja</span> <span class="title">implements</span> <span class="title">Warrior</span> </span>&#123;</span><br><span class="line">    @inject(TYPES.Weapon) private _katana: Weapon;</span><br><span class="line">    @inject(TYPES.ThrowableWeapon) private _shuriken: ThrowableWeapon;</span><br><span class="line">    public fight() &#123; <span class="keyword">return</span> <span class="keyword">this</span>._katana.hit(); &#125;</span><br><span class="line">    public sneak() &#123; <span class="keyword">return</span> <span class="keyword">this</span>._shuriken.throw(); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>创建一个容器，放置服务类</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Container &#125; <span class="keyword">from</span> <span class="string">"inversify"</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; TYPES &#125; <span class="keyword">from</span> <span class="string">"./types"</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; Warrior, Weapon, ThrowableWeapon &#125; <span class="keyword">from</span> <span class="string">"./interfaces"</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; Ninja, Katana, Shuriken &#125; <span class="keyword">from</span> <span class="string">"./entities"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 在容器中，将依赖进行绑定</span></span><br><span class="line"><span class="keyword">const</span> myContainer = <span class="keyword">new</span> Container();</span><br><span class="line">myContainer.bind&lt;Warrior&gt;(TYPES.Warrior).to(Ninja);</span><br><span class="line">myContainer.bind&lt;Weapon&gt;(TYPES.Weapon).to(Katana);</span><br><span class="line">myContainer.bind&lt;ThrowableWeapon&gt;(TYPES.ThrowableWeapon).to(Shuriken);</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> &#123; myContainer &#125;;</span><br></pre></td></tr></table></figure>
+<p>注入依赖</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; myContainer &#125; <span class="keyword">from</span> <span class="string">"./inversify.config"</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; TYPES &#125; <span class="keyword">from</span> <span class="string">"./types"</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; Warrior &#125; <span class="keyword">from</span> <span class="string">"./interfaces"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用get方法来获取依赖，传入的参数为其键名（Symbol类型）</span></span><br><span class="line"><span class="keyword">const</span> ninja = myContainer.get&lt;Warrior&gt;(TYPES.Warrior);</span><br></pre></td></tr></table></figure>
+<h4 id="4-利用TypeScript实现Ultimate-Mode"><a href="#4-利用TypeScript实现Ultimate-Mode" class="headerlink" title="4. 利用TypeScript实现Ultimate Mode"></a>4. 利用TypeScript实现Ultimate Mode</h4><p>首先声明一个ModuleManager模块来负责依赖管理</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> ModuleManager = (<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="comment">// debug模式下可以放在window下进行检查</span></span><br><span class="line">  <span class="comment">// 实际生产环境不建议暴露在window下，而是使用内部变量</span></span><br><span class="line">  (<span class="built_in">window</span> <span class="keyword">as</span> <span class="built_in">any</span>).Modules = &#123;&#125;;</span><br><span class="line">  <span class="keyword">const</span> modules = <span class="built_in">window</span>.Modules;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 使用哈希值来作为键（这个设计可有可无）</span></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">BKDRHash</span>(<span class="params">str: <span class="built_in">string</span></span>): <span class="title">number</span> </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> seed: <span class="built_in">number</span> = <span class="number">31</span>;</span><br><span class="line">    <span class="keyword">let</span> hash: <span class="built_in">number</span> = <span class="number">0</span>,</span><br><span class="line">      index: <span class="built_in">number</span> = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (str[index]) &#123;</span><br><span class="line">      hash = hash * seed + str.charCodeAt(index++);</span><br><span class="line">      hash &amp;= <span class="number">0xFFFFFFFF</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> hash;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 对对应模块生成一个单例，注册到modules中，</span></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">addModule</span>(<span class="params">target: <span class="built_in">any</span></span>): <span class="title">void</span> </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> hash = BKDRHash(target.toString().replace(<span class="regexp">/^function\s(.*)?\s.*/</span>, <span class="string">'$1'</span>));</span><br><span class="line">    <span class="keyword">if</span> (!modules[hash]) &#123;</span><br><span class="line">      modules[hash] = <span class="keyword">new</span> target();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 从moudules里取出某个模块的单例</span></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">getModule</span>(<span class="params">target: <span class="built_in">any</span></span>): <span class="title">any</span> </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> hash = BKDRHash(target.toString().replace(<span class="regexp">/^function\s(.*)?\s.*/</span>, <span class="string">'$1'</span>));</span><br><span class="line">    <span class="keyword">if</span> (!modules[hash]) &#123;</span><br><span class="line">      modules[hash] = <span class="keyword">new</span> target();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> modules[hash];</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    addModule,</span><br><span class="line">    getModule,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;());</span><br></pre></td></tr></table></figure>
+<p>然后需要利用TypeScript提供的Decorator修饰器，来对模块与注入的依赖进行管理</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 在需要注入的模块类上添加该修饰器，可以生成一个单例，纳入ModuleManager的管理</span></span><br><span class="line"><span class="comment"> * @returns &#123;(target: any) =&gt; void&#125;</span></span><br><span class="line"><span class="comment"> * @constructor</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">const</span> Injectable = (): <span class="function"><span class="params">ClassDecorator</span> =&gt;</span> (target: <span class="built_in">Function</span>): <span class="function"><span class="params">any</span> =&gt;</span> &#123;</span><br><span class="line">  ModuleManager.addModule(target);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 模块注册示例</span></span><br><span class="line">@Injectable()</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">SomeModule</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 改造被注入的类中，某个属性的描述器，从而使其承载被注入的依赖</span></span><br><span class="line"><span class="comment"> * @param module</span></span><br><span class="line"><span class="comment"> * @returns &#123;PropertyDecorator&#125;</span></span><br><span class="line"><span class="comment"> * @constructor</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">const</span> Provided = (<span class="built_in">module</span>: any): <span class="function"><span class="params">PropertyDecorator</span> =&gt;</span> (target: <span class="built_in">Object</span>, <span class="attr">name</span>: string | symbol): <span class="function"><span class="params">any</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    configurable: <span class="literal">true</span>,</span><br><span class="line">    enumerable: <span class="literal">false</span>,</span><br><span class="line">    <span class="comment">// 不允许直接对其进行set，应当通过模块暴露的public方法去操作</span></span><br><span class="line">    <span class="keyword">set</span>: () =&gt; &#123;&#125;,</span><br><span class="line">    <span class="comment">// getter设置为返回这个module的单例</span></span><br><span class="line">    <span class="keyword">get</span>: () =&gt; &#123;</span><br><span class="line">      <span class="keyword">return</span> ModuleManager.getModule(<span class="built_in">module</span>);</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 依赖注入示例</span></span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">Example</span> </span>&#123;</span><br><span class="line">  @Provided(SomeModule) private _someModule: SomeModule;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+        </div>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
+            <a href="/2018/03/29/2018/图片懒加载/">
+                图片懒加载
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-03-29</span>
+            
+            
+            
+                <span class="category">
+                    <a href="/categories/前端开发/">前端开发</a>
+                </span>
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <h2 id="懒加载原理"><a href="#懒加载原理" class="headerlink" title="懒加载原理"></a>懒加载原理</h2><p>浏览器在页面呈现之前，会预先获取能够识别的<code>.css</code>、<code>.js</code>以及<code>&lt;img&gt;</code>中<code>src</code>所指向的图片等资源。如果在浏览器检查资源文件时，无法初次辨认<code>&lt;img&gt;</code>中所指向的资源，那么页面就会在图片资源加载之前就呈现。</p>
+<h2 id="懒加载实现"><a href="#懒加载实现" class="headerlink" title="懒加载实现"></a>懒加载实现</h2><h3 id="1-暴力法"><a href="#1-暴力法" class="headerlink" title="1.暴力法"></a>1.暴力法</h3><p>遵循上述这个原理，可以将懒加载分为以下几步：</p>
+<ol>
+<li>将<code>&lt;img&gt;</code>的<code>src</code>属性全都置为空。</li>
+<li>使用一个<code>data-src=&quot;${url}&quot;</code>的属性来记录图片真实的。</li>
+<li>在页面<code>load</code>事件之后，从<code>data-src</code>中读出真实的src（element.dataset.src）</li>
+<li>将原本<code>&lt;img&gt;</code>的<code>src</code>进行恢复。</li>
+</ol>
+<p>该方法的好处是直接有效，而且对页面元素的修改可以保持最小，方便实现功能与功能之间的正交化。基于dom节点操作的方式也很适合基于jQuery的传统网页开发。</p>
+<h3 id="2-改进"><a href="#2-改进" class="headerlink" title="2.改进"></a>2.改进</h3><ol>
+<li>预先使用较小尺寸的缩略图。</li>
+<li>图片预加载。</li>
+<li>使用MVVM框架的前提下，可以直接使用属性绑定的形式，将<code>src</code>绑定url字符串，让MVVM框架来恢复这个<code>src</code>。</li>
+</ol>
+<h5 id="2-1-图片预加载"><a href="#2-1-图片预加载" class="headerlink" title="2.1 图片预加载"></a>2.1 图片预加载</h5><ol>
+<li>CSS：利用<code>height: 0; width: 0;</code>的元素或伪元素，添加<code>background-image: url()</code>的形式进行预加载。</li>
+<li>JS：<code>var image = new Image(); image.src = url;</code>实现图片的自动获取。可以使用load事件来回复元素的<code>src</code>。</li>
+<li>CSS + JS：预定义没有宽度高度，具备background-image的class，使用JS来切换class。</li>
+</ol>
+<h3 id="3-Progressive-Image-Loading"><a href="#3-Progressive-Image-Loading" class="headerlink" title="3.Progressive Image Loading"></a>3.Progressive Image Loading</h3><p>如果有浏览过知乎，或是Medium这样的网站，可以发现这些页面上的图片一开始都是一张很模糊的预览图，然后当用户滚动屏幕的时候，检查图片进入视窗后，才会去真正加载它。</p>
+<p>首先我们需要预先定义一种HTML结构，来承载原本的<code>&lt;img&gt;</code>标签。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"progressive"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">img</span> <span class="attr">class</span>=<span class="string">"preview"</span> <span class="attr">src</span>=<span class="string">"$&#123;url for thumbnail&#125;"</span> </span></span><br><span class="line"><span class="tag">         <span class="attr">data-height</span>=<span class="string">"$&#123;height&#125;"</span> <span class="attr">data-width</span>=<span class="string">"$&#123;width&#125;"</span> </span></span><br><span class="line"><span class="tag">         <span class="attr">data-actual</span>=<span class="string">"$&#123;real url&#125;"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>然后对应几个css类，来实现切换的动画效果。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.progressive</span> &#123;</span><br><span class="line">    <span class="attribute">overflow</span>: hidden;	<span class="comment">/* 为了img在scale的时候不溢出 */</span></span><br><span class="line">    <span class="attribute">outline</span>: none;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.progressive</span>&gt;<span class="selector-tag">img</span> &#123;</span><br><span class="line">    <span class="attribute">display</span>: block;</span><br><span class="line">    <span class="attribute">width</span>: <span class="number">100%</span>;</span><br><span class="line">    <span class="attribute">max-width</span>: none;</span><br><span class="line">    <span class="attribute">height</span>: auto;</span><br><span class="line">    <span class="attribute">border</span>: <span class="number">0</span> none;</span><br><span class="line">    <span class="attribute">will-change</span>: opacity, filter, transform;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 预览状态下的效果 */</span></span><br><span class="line"><span class="selector-class">.progressive</span>&gt;<span class="selector-tag">img</span><span class="selector-class">.preview</span> &#123;</span><br><span class="line">    <span class="attribute">opacity</span>: <span class="number">0.25</span>;	</span><br><span class="line">    <span class="attribute">filter</span>: <span class="built_in">blur</span>(2vw);		<span class="comment">/* 预览图需要模糊处理来优化视觉效果 */</span></span><br><span class="line">    <span class="attribute">transform</span>: <span class="built_in">scale</span>(1.05);	<span class="comment">/* 预先放大 */</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 加载完后的效果 */</span></span><br><span class="line"><span class="selector-class">.progressive</span>&gt;<span class="selector-tag">img</span><span class="selector-class">.reveal</span> &#123;</span><br><span class="line">    <span class="attribute">opacity</span>: <span class="number">1</span>;</span><br><span class="line">    <span class="attribute">filter</span>: <span class="built_in">blur</span>(0);		<span class="comment">/* 恢复清晰 */</span></span><br><span class="line">    <span class="attribute">transform</span>: <span class="built_in">scale</span>(1);	<span class="comment">/* 加载后恢复比例 */</span></span><br><span class="line">    <span class="attribute">transition</span>: transform <span class="number">1s</span> ease-out, opacity <span class="number">1s</span> linear;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后注册事件，来对尚未恢复的<code>&lt;img&gt;</code>内容进行检查，从而判断其是否进入视窗内。对进入视窗的进行加载。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line">;</span><br><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line"><span class="meta">  'use strict'</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 初始图片大小</span></span><br><span class="line">   <span class="function"><span class="keyword">function</span> <span class="title">initSize</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> item,</span><br><span class="line">      itemInfo;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; pictures.length; i++) &#123;</span><br><span class="line">      item = pictures[i];</span><br><span class="line">      itemInfo = item.dataset;</span><br><span class="line">      item.style.height = itemInfo.height + <span class="string">'px'</span>;</span><br><span class="line">      item.style.width = itemInfo.width + <span class="string">'px'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 修改初始大小</span></span><br><span class="line">  <span class="built_in">window</span>.addEventListener(<span class="string">'load'</span>, initSize, <span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">  * 检查图片是否进入视窗</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">inView</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (pictures.length) &#123;</span><br><span class="line">      requestAnimationFrame(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">var</span> windowTop = <span class="built_in">window</span>.pageYOffset,</span><br><span class="line">          windowBottom = windowTop + <span class="built_in">window</span>.innerHeight;</span><br><span class="line">        <span class="keyword">var</span> imageInfo,</span><br><span class="line">          pictureTop,</span><br><span class="line">          pictureBottom;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 检查每幅图片</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; pictures.length; i++) &#123;</span><br><span class="line">          imageInfo = pictures[i].getBoundingClientRect();</span><br><span class="line">          pictureTop = windowTop + imageInfo.top;</span><br><span class="line">          pictureBottom = pictureTop + imageInfo.height;</span><br><span class="line"></span><br><span class="line">          <span class="comment">// 如果进入视窗，就执行加载</span></span><br><span class="line">          <span class="keyword">if</span> (windowTop &lt; pictureBottom &amp;&amp; windowBottom &gt; pictureTop) &#123;</span><br><span class="line">            loadFullImage(pictures[i]);</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 更新需要恢复的照片（放止infinite load加载更多）</span></span><br><span class="line">        pictures = [].slice.call(<span class="built_in">document</span>.querySelectorAll(<span class="string">'.progressive .preview'</span>));</span><br><span class="line"></span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 恢复指定图片</span></span><br><span class="line"><span class="comment">   * @param &#123;Element&#125; item </span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">loadFullImage</span>(<span class="params">item</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> href = item &amp;&amp; (item.getAttribute(<span class="string">'data-actual'</span>) || item.href);</span><br><span class="line">    <span class="keyword">if</span> (!href) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 预加载，放入缓存</span></span><br><span class="line">    <span class="keyword">var</span> img = <span class="keyword">new</span> Image();</span><br><span class="line">    img.src = href;</span><br><span class="line">    img.onload = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">      requestAnimationFrame(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="comment">// 从缓存中去读取</span></span><br><span class="line">        item.src = href;</span><br><span class="line">        <span class="comment">// 切换class，恢复视觉效果</span></span><br><span class="line">        item.classList.remove(<span class="string">'preview'</span>);</span><br><span class="line">        item.classList.add(<span class="string">'reveal'</span>);</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 每0.5s执行一次</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">throttledLoad</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    throttler = throttler || setTimeout(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">      throttler = <span class="literal">null</span>;</span><br><span class="line">      inView();</span><br><span class="line">    &#125;, <span class="number">500</span>)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  <span class="keyword">var</span> pictures = [].slice.call(<span class="built_in">document</span>.querySelectorAll(<span class="string">'.progressive .preview'</span>)),</span><br><span class="line">    throttler = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 初始检查</span></span><br><span class="line">  inView();</span><br><span class="line"></span><br><span class="line">  <span class="built_in">window</span>.addEventListener(<span class="string">'scroll'</span>, throttledLoad, <span class="literal">false</span>);</span><br><span class="line">  <span class="built_in">window</span>.addEventListener(<span class="string">'resize'</span>, throttledLoad, <span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+<p>一个可以改进的的地方是，以上情况仅考虑了垂直方向上的操作，对于水平方向的操作可以进行类似的补充。</p>
+
+        </div>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
+            <a href="/2018/03/29/2018/移动端开发拾遗/">
+                移动端开发拾遗
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-03-29</span>
+            
+            
+            
+                <span class="category">
+                    <a href="/categories/前端开发/">前端开发</a>
+                </span>
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <h2 id="事件"><a href="#事件" class="headerlink" title="事件"></a>事件</h2><h3 id="click点击"><a href="#click点击" class="headerlink" title="click点击"></a>click点击</h3><p>移动端上某些浏览器（某os的默认浏览器）在一些版本下，会发生click失效的情况，特别是使用基于事件冒泡机制的事件委托行为时。<br>解决方法：</p>
+<ul>
+<li>css中加上<code>cursor: pointer;</code></li>
+<li>停止委托（因噎废食）</li>
+<li>给委托对象加上<code>onclick=&quot;void(0)&quot;</code></li>
+<li>改用button和a等标签</li>
+</ul>
+<h3 id="hover伪类"><a href="#hover伪类" class="headerlink" title=":hover伪类"></a>:hover伪类</h3><p>还是移动端上某些浏览器（某os的默认浏览器），对于<code>:hover</code>伪类没有效果，需要使用<code>&lt;a&gt;</code>来hack，或者干脆利用TouchEvent来进行class的切换。</p>
+<h3 id="移动端的拖拽"><a href="#移动端的拖拽" class="headerlink" title="移动端的拖拽"></a>移动端的拖拽</h3><p>Web端可以使用pointerdown，pointermove，pointerup三个事件的组合（原型链：<code>PointerEvent</code> extends <code>MouseEvent</code> extends <code>UIEvent</code> extends <code>Event</code> ），来实现元素的拖拽效果。<br>移动端对应的是touchstart，touchmove，touchend这个组合（原型链：<code>TouchEvent</code> extends <code>UIEvent</code> extends <code>Event</code>）。需要注意的是，要获取它们的位置参数，需要访问<code>event.touches</code>这个Array（基于多指触控），通常调取其中第一个touch点，进行演算。</p>
+<p>以PointerEvent为例拖拽的具体实现为：</p>
+<ol>
+<li>在pointerdown事件中，记录点击位置的初始点位，并且将对应的状态置为<strong>可响应pointermove事件</strong>。</li>
+<li>在pointerMove事件中，对比当前点击位置与初始点位的差别，使用定位或transfrom等手段修改元素的呈现位置。如有需要，应当将每次move的位置也进行记录（比如TouchEvent中，touchend的touches为空Array）。</li>
+<li>在pointerup事件中，获取最终的位置，可以与初始点位比对，决定最终的操作。之后将对应的状态置为<strong>不可响应pointermove事件</strong>。</li>
+</ol>
+<h2 id="布局"><a href="#布局" class="headerlink" title="布局"></a>布局</h2><h3 id="流式布局"><a href="#流式布局" class="headerlink" title="流式布局"></a>流式布局</h3><p>流式布局（Liquid、Fluid）的特点 是页面元素的宽度按照屏幕分辨率进行适配调整，但整体布局不变。代表作栅栏系统（网格系统）。流式布局中大规模使用了<strong>百分比</strong>和<code>vh,vw</code>来控制尺寸。用于</p>
+<p>优势：适配不同大小屏幕的呈现效果。</p>
+<p>劣势：不能实现web端与手机端的同时优化。</p>
+<p>在3G时代刚刚兴起的时候，很多网站都是采用web端与移动端分离（一套web端，一套<code>m.domain.com</code>的移动端）策略，并且配合流式布局来适配<strong>不同屏幕大小的同种类型设备</strong>。</p>
+<h3 id="自适应布局"><a href="#自适应布局" class="headerlink" title="自适应布局"></a>自适应布局</h3><p>自适应布局的特点是分别为不同的屏幕分辨率定义布局，即创建多个静态布局，每个静态布局对应一个屏幕分辨率范围。改变屏幕分辨率可以切换不同的静态局部（页面元素位置发生改变），但在每个静态布局中，页面元素不随窗口大小的调整发生变化。可以把自适应布局看作是静态布局的一个系列。</p>
+<p>屏幕分辨率变化时，页面里面元素的位置会变化而大小不会变化。</p>
+<p><strong>使用 @media 媒体查询给不同尺寸和介质的设备切换不同的样式。在优秀的响应范围设计下可以给适配范围内的设备最好的体验，在同一个设备下实际还是固定的布局</strong>。</p>
+<h3 id="响应式布局"><a href="#响应式布局" class="headerlink" title="响应式布局"></a>响应式布局</h3><p>流式布局与自适应布局的组合使用。</p>
+
+        </div>
+    
+
+</div>
+            
+        </section>
+    </div>
+</div>
+
+
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="wrap-pagination">
+                <a class href="/page/9/">
+                    <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                </a>
+                <a class href="/page/11/">
+                    <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+
+
+</div>
+
+<!-- Footer -->
+<div class="push"></div>
+
+<footer class="footer-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
+                <h2>About</h2>
+                <p>
+                    This theme was developed by <a href="https://github.com/klugjo">Jonathan Klughertz</a>. The source code is available on Github. Create Websites. Make Magic.
+                </p>
+            </div>
+            
+    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/6.bindActionCreators/">Redux源码解析06--bindActionCr</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/5.combineReducers/">Redux源码解析05--combineReduc</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/4.applyMiddleware/">Redux源码解析04--applyMiddlew</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/3.compose/">Redux源码解析03--compose</a>
+            </li>
+            
+        </ul>
+    </div>
+
+
+
+            
+<div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 footer-categories">
+    <h2>Categories</h2>
+    <ul>
+        
+        <li>
+            <a class="footer-post" href="/categories/源码分析/">源码分析</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/学习计划/">学习计划</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/tutorial/">tutorial</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/前端开发/">前端开发</a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="list-inline footer-social-icons">
+                    
+                    <li class="list-inline-item">
+                        <a href="https://github.com/klugjo/hexo-theme-alpha-dust">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-github"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://twitter.com/?lang=en">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-twitter"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.facebook.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-facebook"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.instagram.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-instagram"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://dribbble.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-dribbble"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://plus.google.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-google-plus"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.behance.net/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-behance"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://500px.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-500px"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="mailto:test@example.com">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-envelope-o"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="\#">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-rss"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="footer-copyright">
+                    @Untitled. All right reserved | Design & Hexo <a href="http://www.codeblocq.com/">Jonathan Klughertz</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- After footer scripts -->
+
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Tween Max -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/main.js"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>

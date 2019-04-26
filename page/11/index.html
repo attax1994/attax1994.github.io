@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="还没想好写什么">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="attax1994">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="Attax1994">
+    
+
+    <!--Open Graph Description-->
+    
+        <meta property="og:description" content="还没想好写什么">
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="Attax1994">
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="website">
+    
+
+    <!--Page Cover-->
+    
+
+    <meta name="twitter:card" content="summary">
+    
+
+    <!-- Title -->
+    
+    <title>page - Attax1994</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Google Analytics -->
+    
+
+
+</head>
+
+
+<body>
+
+<div class="bg-gradient"></div>
+<div class="bg-pattern"></div>
+
+<!-- Menu -->
+<!--Menu Links and Overlay-->
+<div class="menu-bg">
+    <div class="menu-container">
+        <ul>
+            
+            <li class="menu-item">
+                <a href="/">
+                    Home
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/archives">
+                    Archives
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="https://attax1994.github.io/Resume/">
+                    About
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+<!--Hamburger Icon-->
+<nav>
+    <a href="#menu"></a>
+</nav>
+
+<div class="container">
+
+    <!-- Main Content -->
+    <div class="row">
+    <div class="col-sm-12">
+
+        <!--Title and Logo-->
+        <header>
+    <div class="logo">
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
+        
+            <h1 id="main-title" class="title">Attax1994</h1>
+        
+    </div>
+</header>
+
+        <section class="main">
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
+            <a href="/2018/03/29/2018/移动端的定位/">
+                移动端的定位
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-03-29</span>
+            
+            
+            
+                <span class="category">
+                    <a href="/categories/前端开发/">前端开发</a>
+                </span>
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <h2 id="定位的偏移"><a href="#定位的偏移" class="headerlink" title="定位的偏移"></a>定位的偏移</h2><p>通常来说，移动端定位依赖于该设备系统对应的SDK所以提供的接口，这里面最容易遇到的就是坐标系问题。<br>常见坐标系有三种，地球坐标（WGS84，国际标准）、中国国测局地理坐标（GCJ-02，火星坐标）、百度坐标（BD09）。坐标系的选择与使用的地图类型有着很大的相关性，如果两者之间存在不对应的情况，就容易引发定位的偏移问题。<br>对于系统原生的SDK而言，默认返回的是WGS84坐标系下的定位。对于国内的一些定位SDK而言，高德SDK没有坐标系参数设定，在大陆和港澳地区获取的坐标系即为GCJ02坐标系，在台湾和海外地区都是WGS84坐标系；百度SDK可以自行设定坐标系参数，即返回WGS84坐标系，还是GCJ02坐标系或者BD09坐标系（如果设定的是GCJ02坐标系，它在大陆、港澳台地区获取的坐标系都是GCJ02坐标系）。<br>基于这种情况，假设我们采用了系统定位，辅以百度地图来呈现，就会出现偏差在1km左右物理距离的偏移（百度地图提供了Convertor来完成WGS84到BD09的转换）。</p>
+<h3 id="定位偏移算法"><a href="#定位偏移算法" class="headerlink" title="定位偏移算法"></a>定位偏移算法</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">; (<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> pi = <span class="built_in">Math</span>.PI;</span><br><span class="line">    <span class="keyword">const</span> a = <span class="number">6378245.0</span>;</span><br><span class="line">    <span class="keyword">const</span> ee = <span class="number">0.00669342162296594323</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">transformLat</span>(<span class="params">x, y</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">let</span> ret = <span class="number">-100.0</span> + <span class="number">2.0</span> * x + <span class="number">3.0</span> * y + <span class="number">0.2</span> * y * y + <span class="number">0.1</span> * x * y</span><br><span class="line">            + <span class="number">0.2</span> * <span class="built_in">Math</span>.sqrt(<span class="built_in">Math</span>.abs(x));</span><br><span class="line">        ret += (<span class="number">20.0</span> * <span class="built_in">Math</span>.sin(<span class="number">6.0</span> * x * pi) + <span class="number">20.0</span> * <span class="built_in">Math</span>.sin(<span class="number">2.0</span> * x * pi)) * <span class="number">2.0</span> / <span class="number">3.0</span>;</span><br><span class="line">        ret += (<span class="number">20.0</span> * <span class="built_in">Math</span>.sin(y * pi) + <span class="number">40.0</span> * <span class="built_in">Math</span>.sin(y / <span class="number">3.0</span> * pi)) * <span class="number">2.0</span> / <span class="number">3.0</span>;</span><br><span class="line">        ret += (<span class="number">160.0</span> * <span class="built_in">Math</span>.sin(y / <span class="number">12.0</span> * pi) + <span class="number">320</span> * <span class="built_in">Math</span>.sin(y * pi / <span class="number">30.0</span>)) * <span class="number">2.0</span> / <span class="number">3.0</span>;</span><br><span class="line">        <span class="keyword">return</span> ret;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">transformLon</span>(<span class="params">x, y</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">let</span> ret = <span class="number">300.0</span> + x + <span class="number">2.0</span> * y + <span class="number">0.1</span> * x * x + <span class="number">0.1</span> * x * y + <span class="number">0.1</span></span><br><span class="line">            * <span class="built_in">Math</span>.sqrt(<span class="built_in">Math</span>.abs(x));</span><br><span class="line">        ret += (<span class="number">20.0</span> * <span class="built_in">Math</span>.sin(<span class="number">6.0</span> * x * pi) + <span class="number">20.0</span> * <span class="built_in">Math</span>.sin(<span class="number">2.0</span> * x * pi)) * <span class="number">2.0</span> / <span class="number">3.0</span>;</span><br><span class="line">        ret += (<span class="number">20.0</span> * <span class="built_in">Math</span>.sin(x * pi) + <span class="number">40.0</span> * <span class="built_in">Math</span>.sin(x / <span class="number">3.0</span> * pi)) * <span class="number">2.0</span> / <span class="number">3.0</span>;</span><br><span class="line">        ret += (<span class="number">150.0</span> * <span class="built_in">Math</span>.sin(x / <span class="number">12.0</span> * pi) + <span class="number">300.0</span> * <span class="built_in">Math</span>.sin(x / <span class="number">30.0</span></span><br><span class="line">            * pi)) * <span class="number">2.0</span> / <span class="number">3.0</span>;</span><br><span class="line">        <span class="keyword">return</span> ret;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">WGS84_to_GCJ02</span>(<span class="params">lat, lon</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">let</span> dLat = transformLat(lon - <span class="number">105.0</span>, lat - <span class="number">35.0</span>),</span><br><span class="line">            dLon = transformLon(lon - <span class="number">105.0</span>, lat - <span class="number">35.0</span>);</span><br><span class="line">        <span class="keyword">const</span> radLat = lat / <span class="number">180.0</span> * pi,</span><br><span class="line">            magic = <span class="built_in">Math</span>.sin(radLat),</span><br><span class="line">            sqrtMagic = <span class="built_in">Math</span>.sqrt(<span class="number">1</span> - ee * magic * magic);</span><br><span class="line">        dLat = (dLat * <span class="number">180.0</span>) / ((a * (<span class="number">1</span> - ee)) / (magic * sqrtMagic) * pi);</span><br><span class="line">        dLon = (dLon * <span class="number">180.0</span>) / (a / sqrtMagic * <span class="built_in">Math</span>.cos(radLat) * pi);</span><br><span class="line">        <span class="keyword">return</span> &#123; <span class="attr">latitude</span>: lat + dLat, <span class="attr">longtitude</span>: lon + dLon &#125;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">GCJ02_to_WGS84</span>(<span class="params">lat, lon</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">const</span> gps = WGS84_to_GCJ02(lat, lon);</span><br><span class="line">        <span class="keyword">return</span> &#123; <span class="attr">latitude</span>: lat * <span class="number">2</span> - gps.latitude, <span class="attr">lontitude</span>: lon * <span class="number">2</span> - gps.longtitude &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+<h2 id="精度问题"><a href="#精度问题" class="headerlink" title="精度问题"></a>精度问题</h2><p>手机有三种定位方式：</p>
+<ul>
+<li>卫星定位：采用GPS或北斗定位系统，精度在10-100米左右，在室内无法使用，受环境限制。</li>
+<li>基站定位：根据运营商基站进行定位，具体为测算附近三个基站与用户之间的距离（信号延时，信号强度），同时将其两两相连，构成三角形，计算用户在这个三角形中的位置，然后计算用户相对于三个基站的位置偏移，取误差范围内可接受的结果。其精度受基站密度影响较大，城市50-150米，城郊100-300米，乡村200-2000米；同时信号也容易受到环境的影响。</li>
+<li>WIFI：根据周围WIFI路由器的位置计算定位，精度在100-200米左右。</li>
+</ul>
+
+        </div>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
+            <a href="/2018/03/20/2018/手写EventEmitter/">
+                手写EventEmitter
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-03-20</span>
+            
+            
+            
+                <span class="category">
+                    <a href="/categories/前端开发/">前端开发</a>
+                </span>
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <hr>
+
+<h1 id="手写EventEmitter"><a href="#手写EventEmitter" class="headerlink" title="手写EventEmitter"></a>手写EventEmitter</h1><h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><h3 id="1-事件的创建"><a href="#1-事件的创建" class="headerlink" title="1. 事件的创建"></a>1. 事件的创建</h3><p>JS中，最简单的创建事件方法，是使用Event构造器：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> myEvent = <span class="keyword">new</span> Event(<span class="string">'event_name'</span>);</span><br></pre></td></tr></table></figure></p>
+<p>但是为了能够传递数据，就需要使用 CustomEvent 构造器：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> myEvent = <span class="keyword">new</span> CustomEvent(<span class="string">'event_name'</span>, &#123;</span><br><span class="line">	detail:&#123;</span><br><span class="line">		<span class="comment">// 将需要传递的数据写在detail中，以便在EventListener中获取</span></span><br><span class="line">		<span class="comment">// 数据将会在event.detail中得到</span></span><br><span class="line">	&#125;,</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<h3 id="2-事件的监听"><a href="#2-事件的监听" class="headerlink" title="2. 事件的监听"></a>2. 事件的监听</h3><p>JS的EventListener是根据事件的名称来进行监听的，比如我们在上文中已经创建了一个名称为<strong>‘event_name’</strong> 的事件，那么当某个元素需要监听它的时候，就需要创建相应的监听器：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//假设listener注册在window对象上</span></span><br><span class="line"><span class="built_in">window</span>.addEventListener(<span class="string">'event_name'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">event</span>)</span>&#123;</span><br><span class="line">	<span class="comment">// 如果是CustomEvent，传入的数据在event.detail中</span></span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">'得到数据为：'</span>, event.detail);</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// ...后续相关操作</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>至此，window对象上就有了对<strong>‘event_name’</strong> 这个事件的监听器，当window上触发这个事件的时候，相关的callback就会执行。</p>
+<h3 id="3-事件的触发"><a href="#3-事件的触发" class="headerlink" title="3. 事件的触发"></a>3. 事件的触发</h3><p>对于一些内置（built-in）的事件，通常都是有一些操作去做触发，比如鼠标单击对应MouseEvent的click事件，利用鼠标（ctrl+滚轮上下）去放大缩小页面对应WheelEvent的resize事件。<br>然而，自定义的事件由于不是JS内置的事件，所以我们需要在JS代码中去显式地触发它。方法是使用 <strong>dispatchEvent</strong> 去触发（IE8低版本兼容，使用fireEvent）：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 首先需要提前定义好事件，并且注册相关的EventListener</span></span><br><span class="line"><span class="keyword">var</span> myEvent = <span class="keyword">new</span> CustomEvent(<span class="string">'event_name'</span>, &#123; </span><br><span class="line">	detail: &#123; <span class="attr">title</span>: <span class="string">'This is title!'</span>&#125;,</span><br><span class="line">&#125;);</span><br><span class="line"><span class="built_in">window</span>.addEventListener(<span class="string">'event_name'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">event</span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">'得到标题为：'</span>, event.detail.title);</span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">// 随后在对应的元素上触发该事件</span></span><br><span class="line"><span class="keyword">if</span>(<span class="built_in">window</span>.dispatchEvent) &#123;	</span><br><span class="line">	<span class="built_in">window</span>.dispatchEvent(myEvent);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	<span class="built_in">window</span>.fireEvent(myEvent);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 根据listener中的callback函数定义，应当会在console中输出 "得到标题为： This is title!"</span></span><br></pre></td></tr></table></figure></p>
+<p>需要特别注意的是，当一个事件触发的时候，如果相应的element及其上级元素没有对应的EventListener，就不会有任何回调操作。<br>对于子元素的监听，可以对父元素添加事件托管，让事件在事件冒泡阶段被监听器捕获并执行。这时候，使用event.target就可以获取到具体触发事件的元素。</p>
+<hr>
+
+<h2 id="事件触发器"><a href="#事件触发器" class="headerlink" title="事件触发器"></a>事件触发器</h2><h3 id="1-基于浏览器的CustomEvent"><a href="#1-基于浏览器的CustomEvent" class="headerlink" title="1.基于浏览器的CustomEvent"></a>1.基于浏览器的CustomEvent</h3><p>上述过程是在JS中触发一个事件的原理，但是相对于实际的运用不算方便，所以需要对这个事件发生器进行一下封装。<br>这里可以选择将事件注册在document元素上，这样在页面销毁之前，这个事件会一直保存。<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 类似于Vue、Angular等MVVM的事件发生器，使用CustomEvent</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">// ES6</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">_Event</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> on(type, handler) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">document</span>.addEventListener(type, handler)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">static</span> emit(type, data) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">document</span>.dispatchEvent(<span class="keyword">new</span> CustomEvent(type, &#123;</span><br><span class="line">            detail: data</span><br><span class="line">        &#125;))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ES5</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">myEvent</span>(<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line">myEvent.on = <span class="function"><span class="keyword">function</span> (<span class="params">type, handler</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">document</span>.addEventListener(type, handler);</span><br><span class="line">&#125;;</span><br><span class="line">myEvent.emit = <span class="function"><span class="keyword">function</span> (<span class="params">type, data</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">document</span>.dispatchEvent(<span class="keyword">new</span> CustomEvent(type, &#123;</span><br><span class="line">        detail: data,</span><br><span class="line">    &#125;));</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">_Event.on(<span class="string">'search'</span>, e =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(e.detail);</span><br><span class="line">&#125;);</span><br><span class="line">_Event.emit(<span class="string">'search'</span>, <span class="string">'dosth '</span>);</span><br></pre></td></tr></table></figure></p>
+<h3 id="2-实现一个可以手动触发的Event管理器"><a href="#2-实现一个可以手动触发的Event管理器" class="headerlink" title="2.实现一个可以手动触发的Event管理器"></a>2.实现一个可以手动触发的Event管理器</h3><p>对于一些MVVM项目来说，状态的管理不能局限于单一一个页面，页面之间的共享需要使用Shared Service Worker来实现，这时候依赖于document上的CustomEvent就比较乏力了。<br>于是，我们需要去设计一个Event的管理器，用它来记录各个Event的hanlders，然后用emit方法触发。<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> Event = (<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// private的_events记录每种event的handlers</span></span><br><span class="line">    <span class="keyword">var</span> _events = &#123;&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 注册一个Event的handler</span></span><br><span class="line"><span class="comment">     * @param &#123;String&#125; evt </span></span><br><span class="line"><span class="comment">     * @param &#123;*&#125; handler </span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">on</span>(<span class="params">evt, handler</span>) </span>&#123;</span><br><span class="line">        _events[evt] = _events[evt] || [];</span><br><span class="line">        <span class="comment">// 如果是没有名称的话就无法删除</span></span><br><span class="line">        _events[evt].push(&#123;</span><br><span class="line">            name: handler.name || <span class="string">'anonymous'</span>,</span><br><span class="line">            handler: handler,</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 触发一种Event，并传入数据</span></span><br><span class="line"><span class="comment">     * @param &#123;String&#125; evt </span></span><br><span class="line"><span class="comment">     * @param &#123;*&#125; args </span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">emit</span>(<span class="params">evt, args</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!_events[evt]) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>, ii = _events[evt].length; i &lt; ii; i++) &#123;</span><br><span class="line">            _events[evt][i].handler(args);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 用来移除非匿名的handler</span></span><br><span class="line"><span class="comment">     * @param &#123;String&#125; evt </span></span><br><span class="line"><span class="comment">     * @param &#123;String&#125; name </span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">remove</span>(<span class="params">evt, name</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!_events[evt]) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        _events[evt] = _events[evt].filter(<span class="function"><span class="params">value</span> =&gt;</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> value.name !== name;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        on: on,</span><br><span class="line">        emit: emit,</span><br><span class="line">        remove: remove,</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;)();</span><br><span class="line"></span><br><span class="line">Event.on(<span class="string">'search'</span>, <span class="function"><span class="keyword">function</span> <span class="title">dosth</span>(<span class="params">data</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(data);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">Event.emit(<span class="string">'search'</span>, <span class="string">'123'</span>);</span><br><span class="line"></span><br><span class="line">Event.remove(<span class="string">'search'</span>, <span class="string">'dosth'</span>);</span><br><span class="line"></span><br><span class="line">Event.emit(<span class="string">'search'</span>, <span class="string">'123'</span>);</span><br></pre></td></tr></table></figure></p>
+
+        </div>
+    
+
+</div>
+            
+                
+<div class="post">
+
+    <div class="post-header index">
+        <h1 class="title">
+            <a href="/2018/03/19/2018/HEXO配置过程/">
+                Hexo配置过程
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2018-03-19</span>
+            
+            
+            
+                <span class="category">
+                    <a href="/categories/tutorial/">tutorial</a>
+                </span>
+            
+        </div>
+    </div>
+
+    
+        <div class="content">
+            <h1 id="Hexo配置过程"><a href="#Hexo配置过程" class="headerlink" title="Hexo配置过程"></a>Hexo配置过程</h1><p>最早的博客是放在<a href="http://blog.csdn.net/lqy455949477" target="_blank" rel="noopener">CSDN</a>上的。后来发现了<a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a>这个框架，将其与Git Page结合可以直接部署在Github上，确实是非常方便。于是花了几小时的时间过了一下官网的文档，并尝试了将其部署到这个Repo的上来。</p>
+<h2 id="配置环境"><a href="#配置环境" class="headerlink" title="配置环境"></a>配置环境</h2><p>首先，使用HEXO需要具备一系列的开发环境：</p>
+<ul>
+<li><a href="https://nodejs.org/" target="_blank" rel="noopener">Node.js、npm包管理工具</a></li>
+<li><a href="https://git-scm.com/" target="_blank" rel="noopener">Git</a></li>
+</ul>
+<p>安装完成后可以在termial检查node和npm是否存在。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> node -v</span><br><span class="line"><span class="meta">$</span> npm -v</span><br><span class="line"><span class="meta">$</span> git --version</span><br></pre></td></tr></table></figure></p>
+<p>最后记得一定要有自己的<a href="https://github.com/" target="_blank" rel="noopener">Github</a>帐号，要不然部署到哪里去呢？</p>
+<h2 id="使用Hexo"><a href="#使用Hexo" class="headerlink" title="使用Hexo"></a>使用Hexo</h2><h3 id="Hexo安装"><a href="#Hexo安装" class="headerlink" title="Hexo安装"></a>Hexo安装</h3><p>在npm配置完成后，就可以进行Hexo-cli的安装<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> npm install -g hexo-cli</span><br></pre></td></tr></table></figure></p>
+<h3 id="建立项目"><a href="#建立项目" class="headerlink" title="建立项目"></a>建立项目</h3><p>安装完成后，就可以使用Hexo-cli来生成Hexo的项目<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> 创建项目，&lt;folder&gt;替换为具体的文件夹名称</span><br><span class="line"><span class="meta">$</span> hexo init &lt;folder&gt;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> 进入该文件夹</span><br><span class="line"><span class="meta">$</span> cd &lt;folder&gt;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> 安装node_modules依赖</span><br><span class="line"><span class="meta">$</span> npm install</span><br></pre></td></tr></table></figure></p>
+<p>安装完成后，就可以使用Hexo来启动这个项目，进行测试<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> hexo server</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> 或者使用简写形式</span><br><span class="line"><span class="meta">$</span> hexo s</span><br></pre></td></tr></table></figure></p>
+<p>如果运行成功，Hexo默认使用的是<code>localhost:4000</code>端口，直接进入该地址即可查看。<br>如果该端口已被占用，则需要更换一个端口来运行：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> 使用4001或者其他的未被占用的端口</span><br><span class="line"><span class="meta">$</span> hexo s -p 4001</span><br></pre></td></tr></table></figure></p>
+<h3 id="GitHub的准备工作"><a href="#GitHub的准备工作" class="headerlink" title="GitHub的准备工作"></a>GitHub的准备工作</h3><p>这里需要分为两种情况来讨论，具体关乎branch的差别。</p>
+<h4 id="1-branch-master"><a href="#1-branch-master" class="headerlink" title="1.branch: master"></a>1.branch: master</h4><p>如果要在master分支上部署网站的话，就<strong>必须建立一个名称为<code>&lt;yourUserName&gt;.github.io</code>（将你的Github账户名替换这个<code>&lt;yourUserName&gt;</code>）的Repo</strong>，然后在进行部署推送的时候，就可以使用这个Repo的master branch。</p>
+<h4 id="2-branch-gh-pages"><a href="#2-branch-gh-pages" class="headerlink" title="2.branch: gh-pages"></a>2.branch: gh-pages</h4><p>如果不想要将网站部署在master分支，在某一个Repo下建立gh-pages分支，部署的时候再部署到这个分支上（部署的过程将会在后面描述）。</p>
+<p>branch准备完成以后，需要在Github的Repo中，选择Settings -&gt; Github Pages选项，将Source选择到你使用的branch上面，就可以打开Github Pages功能了。<br><img src="/2018/03/19/2018/HEXO配置过程/gitpage.png" title="GitPage示例"></p>
+<h3 id="Hexo在Git上部署"><a href="#Hexo在Git上部署" class="headerlink" title="Hexo在Git上部署"></a>Hexo在Git上部署</h3><h5 id="1-Git的配置"><a href="#1-Git的配置" class="headerlink" title="1.Git的配置"></a>1.Git的配置</h5><p>设置好Git的用户名和email（如果以前有设置过，可跳过）<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> git config --global user.name "yourname"</span><br><span class="line"><span class="meta">$</span> git config --global user.email "youremail"</span><br></pre></td></tr></table></figure></p>
+<h5 id="2-安装部署工具"><a href="#2-安装部署工具" class="headerlink" title="2.安装部署工具"></a>2.安装部署工具</h5><p><strong>在项目路径下</strong>，安装Hexo for Git的部署工具<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure></p>
+<h5 id="3-修改配置文件-config-yml"><a href="#3-修改配置文件-config-yml" class="headerlink" title="3.修改配置文件_config.yml"></a>3.修改配置文件<code>_config.yml</code></h5><p>配置<code>_config.yml</code>文件中的deploy项。（注意属性名称的冒号<code>:</code>后面要有一个空格）<br>type选择git<br>repo输入你github项目(即将被部署页面等内容的项目)的url<br>branch选择你需要的branch，比如master或者gh-pages<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line"><span class="attr">  type:</span> <span class="string">git</span></span><br><span class="line"><span class="attr">  repo:</span> <span class="string">&lt;url</span> <span class="string">address</span> <span class="string">of</span> <span class="string">your</span> <span class="string">github</span> <span class="string">repository&gt;</span></span><br><span class="line"><span class="attr">  branch:</span> <span class="string">master</span></span><br></pre></td></tr></table></figure></p>
+<p>当然也可以根据<a href="https://hexo.io/zh-cn/docs/deployment.html" target="_blank" rel="noopener">官方文档</a>，去配置其他source的部署。</p>
+<h5 id="4-Hexo部署"><a href="#4-Hexo部署" class="headerlink" title="4.Hexo部署"></a>4.Hexo部署</h5><p>以上配置完成后，就可以着手正式的部署了。<br>在项目路径下，打开terminal输入以下命令<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> 生成静态文件</span><br><span class="line"><span class="meta">$</span> hexo generate</span><br><span class="line"><span class="meta">#</span> 部署</span><br><span class="line"><span class="meta">$</span> hexo deploy</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> 简写形式，g表示generate，d表示deploy</span><br><span class="line"><span class="meta">$</span> hexo g -d</span><br><span class="line"><span class="meta">$</span> hexo d -g</span><br></pre></td></tr></table></figure></p>
+<p>这样就能将Hexo生成的静态页面，推送到远端的Github上。<br>如果部署在master分支上，访问<code>&lt;yourUserName&gt;.github.io</code>。<br>如果部署在gh-pages分支上，访问<code>&lt;yourUserName&gt;.github.io/&lt;repository&gt;/</code>。</p>
+
+        </div>
+    
+
+</div>
+            
+        </section>
+    </div>
+</div>
+
+
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="wrap-pagination">
+                <a class href="/page/10/">
+                    <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                </a>
+                <a class="disabled" href="/">
+                    <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+
+
+</div>
+
+<!-- Footer -->
+<div class="push"></div>
+
+<footer class="footer-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
+                <h2>About</h2>
+                <p>
+                    This theme was developed by <a href="https://github.com/klugjo">Jonathan Klughertz</a>. The source code is available on Github. Create Websites. Make Magic.
+                </p>
+            </div>
+            
+    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/6.bindActionCreators/">Redux源码解析06--bindActionCr</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/5.combineReducers/">Redux源码解析05--combineReduc</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/4.applyMiddleware/">Redux源码解析04--applyMiddlew</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/3.compose/">Redux源码解析03--compose</a>
+            </li>
+            
+        </ul>
+    </div>
+
+
+
+            
+<div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 footer-categories">
+    <h2>Categories</h2>
+    <ul>
+        
+        <li>
+            <a class="footer-post" href="/categories/源码分析/">源码分析</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/学习计划/">学习计划</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/tutorial/">tutorial</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/前端开发/">前端开发</a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="list-inline footer-social-icons">
+                    
+                    <li class="list-inline-item">
+                        <a href="https://github.com/klugjo/hexo-theme-alpha-dust">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-github"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://twitter.com/?lang=en">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-twitter"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.facebook.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-facebook"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.instagram.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-instagram"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://dribbble.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-dribbble"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://plus.google.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-google-plus"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.behance.net/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-behance"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://500px.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-500px"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="mailto:test@example.com">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-envelope-o"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="\#">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-rss"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="footer-copyright">
+                    @Untitled. All right reserved | Design & Hexo <a href="http://www.codeblocq.com/">Jonathan Klughertz</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- After footer scripts -->
+
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Tween Max -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/main.js"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>

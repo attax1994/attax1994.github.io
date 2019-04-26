@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.8.0">
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="还没想好写什么">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="attax1994">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="Vue源码解析02--shared">
+    
+
+    <!--Open Graph Description-->
+    
+        <meta property="og:description" content="还没想好写什么">
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="Attax1994">
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article">
+    
+
+    <!--Page Cover-->
+    
+
+    <meta name="twitter:card" content="summary">
+    
+
+    <!-- Title -->
+    
+    <title>Vue源码解析02--shared - Attax1994</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Google Analytics -->
+    
+
+
+</head>
+
+
+<body>
+
+<div class="bg-gradient"></div>
+<div class="bg-pattern"></div>
+
+<!-- Menu -->
+<!--Menu Links and Overlay-->
+<div class="menu-bg">
+    <div class="menu-container">
+        <ul>
+            
+            <li class="menu-item">
+                <a href="/">
+                    Home
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/archives">
+                    Archives
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="https://attax1994.github.io/Resume/">
+                    About
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+<!--Hamburger Icon-->
+<nav>
+    <a href="#menu"></a>
+</nav>
+
+<div class="container">
+
+    <!-- Main Content -->
+    <div class="row">
+    <div class="col-sm-12">
+
+        <!--Title and Logo-->
+        <header>
+    <div class="logo">
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
+        
+    </div>
+</header>
+
+        <section class="main">
+            
+<div class="post">
+
+    <div class="post-header">
+        <h1 class="title">
+            <a href="/2019/04/26/2019/vue/Vue源码解析02--shared/">
+                Vue源码解析02--shared
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2019-04-26</span>
+            
+            
+            
+                <span class="category">
+                    <a href="/categories/前端开发/">前端开发</a>
+                </span>
+            
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- Gallery -->
+        
+
+        <!-- Post Content -->
+        <h2 id="1-constants-js-全局常量"><a href="#1-constants-js-全局常量" class="headerlink" title="1. constants.js 全局常量"></a>1. constants.js 全局常量</h2><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> SSR_ARRT = <span class="string">'data-server-rendered'</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Vue中资源的三种类型名称</span></span><br><span class="line"><span class="keyword">const</span> ASSET_TYPES = &#123;</span><br><span class="line">  <span class="string">'component'</span>,</span><br><span class="line">  <span class="string">'directive'</span>,</span><br><span class="line">  <span class="string">'filter'</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 组件生命周期钩子的名称</span></span><br><span class="line"><span class="keyword">const</span> LIFECYCLE_HOOKS = &#123;</span><br><span class="line">  <span class="string">'beforeCreate'</span>,</span><br><span class="line">  <span class="string">'created'</span>,</span><br><span class="line">  <span class="string">'beforeMount'</span>,</span><br><span class="line">  <span class="string">'mounted'</span>,</span><br><span class="line">  <span class="string">'beforeUpdate'</span>,</span><br><span class="line">  <span class="string">'updated'</span>,</span><br><span class="line">  <span class="string">'beforeDestroy'</span>,</span><br><span class="line">  <span class="string">'destroyed'</span>,</span><br><span class="line">  <span class="string">'activated'</span>,</span><br><span class="line">  <span class="string">'deactivated'</span>,</span><br><span class="line">  <span class="string">'errorCaptured'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="2-util-js-通用的函数"><a href="#2-util-js-通用的函数" class="headerlink" title="2. util.js 通用的函数"></a>2. util.js 通用的函数</h2><h3 id="2-1-类型判断的函数"><a href="#2-1-类型判断的函数" class="headerlink" title="2.1 类型判断的函数"></a>2.1 类型判断的函数</h3><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 空对象，不能做任何修改</span></span><br><span class="line"><span class="keyword">const</span> emptyObject = <span class="built_in">Object</span>.freeze(&#123;&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 检查是否为undefined或null（也可以用双等号==）</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">isUndef</span> (<span class="params">v: <span class="built_in">any</span></span>): <span class="title">boolean</span> </span>&#123; <span class="keyword">return</span> v === <span class="literal">undefined</span> || v === <span class="literal">null</span> &#125;</span><br><span class="line"><span class="comment">// 与isUndef相反</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">isDef</span>(<span class="params">v: <span class="built_in">any</span></span>): <span class="title">boolean</span> </span>&#123; <span class="keyword">return</span> v !== <span class="literal">undefined</span> &amp;&amp; v !== <span class="literal">null</span> &#125;</span><br><span class="line"><span class="comment">// 判断是否为true，对应的还有 isFalse()</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">isTrue</span>(<span class="params">v: <span class="built_in">any</span></span>): <span class="title">boolean</span> </span>&#123; <span class="keyword">return</span> v === <span class="literal">true</span> &#125;</span><br><span class="line"><span class="comment">// 判断是否为非空的基本类型（number, string, symbol, boolean）</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">isPrimitive</span>(<span class="params">v: <span class="built_in">any</span></span>): <span class="title">boolean</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> (<span class="keyword">typeof</span> v === <span class="string">'string'</span> ||</span><br><span class="line">          <span class="keyword">typeof</span> v === <span class="string">'number'</span> ||</span><br><span class="line">          <span class="keyword">typeof</span> v === <span class="string">'symbol'</span> ||</span><br><span class="line">          <span class="keyword">typeof</span> v === <span class="string">'boolean'</span></span><br><span class="line">	)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 判断是否为对象，注意先去除null的错误判断</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">isObject</span>(<span class="params">obj: mixed</span>): <span class="title">boolean</span> </span>&#123; <span class="keyword">return</span> obj !== <span class="literal">null</span> || <span class="keyword">typeof</span> obj === <span class="string">'object'</span> &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Object.prototype.toString的alias</span></span><br><span class="line"><span class="keyword">const</span> _toString = <span class="built_in">Object</span>.prototype.toString</span><br><span class="line"><span class="comment">// 用Object.prototype.toString来调取类型，比typeof更准确，能判断null和内置对象</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">toRawType</span>(<span class="params">v: <span class="built_in">any</span></span>): <span class="title">string</span> </span>&#123; <span class="keyword">return</span> _toString.call(v).slice(<span class="number">8</span>, <span class="number">-1</span>) &#125;</span><br><span class="line"><span class="comment">// 是否为纯对象，类似的还有isRegExp(), </span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">isPlainObject</span>(<span class="params">obj: <span class="built_in">any</span></span>): <span class="title">boolean</span> </span>&#123; <span class="keyword">return</span> _toString.call(obj)===<span class="string">'[object Object]'</span> &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 判断是否为有效的数组索引（自然数）</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">isValidArrayIndex</span>(<span class="params">val: <span class="built_in">any</span></span>): <span class="title">boolean</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 保留纯数字部分</span></span><br><span class="line">  <span class="keyword">const</span> n = <span class="built_in">parseFloat</span>(<span class="built_in">String</span>(val))</span><br><span class="line">  <span class="comment">// Array的index要为自然数</span></span><br><span class="line">  <span class="keyword">return</span> n &gt;= <span class="number">0</span> &amp;&amp; <span class="built_in">Math</span>.floor(n) === n &amp;&amp; <span class="built_in">isFinite</span>(val)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-2-对象相关函数"><a href="#2-2-对象相关函数" class="headerlink" title="2.2 对象相关函数"></a>2.2 对象相关函数</h3><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 将任何类型转换为string</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">toString</span>(<span class="params">val: <span class="built_in">any</span></span>): <span class="title">string</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> val == <span class="literal">null</span> ? </span><br><span class="line">    <span class="string">''</span> : <span class="keyword">typeof</span> val === <span class="string">'object'</span> ? <span class="built_in">JSON</span>.stringify(val, <span class="literal">null</span>, <span class="number">2</span>): <span class="built_in">String</span>(val)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 将一个输入string转换为number；如果失败，返回原string</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">toNumber</span>(<span class="params">val: <span class="built_in">string</span></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> n = <span class="built_in">parseFloat</span>(val)</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">isNaN</span>(n) ? val : n</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 返回一个map的闭包，用于检查某个key是否为它的属性</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">makeMap</span>(<span class="params">str: <span class="built_in">string</span>, expectesLowerCase?: <span class="built_in">boolean</span></span>): (<span class="params">key: <span class="built_in">string</span></span>) =&gt; <span class="title">true</span> | <span class="title">void</span> </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> map = <span class="built_in">Object</span>.create(<span class="literal">null</span>)</span><br><span class="line">  <span class="keyword">const</span> list: <span class="built_in">Array</span>&lt;<span class="built_in">string</span>&gt; = str.split(<span class="string">','</span>)</span><br><span class="line">  <span class="keyword">for</span>(<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; list.length; i++) &#123;</span><br><span class="line">    map[list[i]] = <span class="literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> expectedLowerCase ? <span class="function"><span class="params">val</span> =&gt;</span> map[val.toLowerCase]: <span class="function"><span class="params">val</span> =&gt;</span> map[val] </span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// makeMap生成的&#123;slot: true, component: true&#125;来检查元素的tag是否为Vue的内置tag</span></span><br><span class="line"><span class="keyword">const</span> isBuiltInTag = makeMap(<span class="string">'slot,component'</span>, <span class="literal">true</span>)</span><br><span class="line"><span class="comment">// 检查元素某个属性是否为Vue的保留属性（key, ref, slot, slot-scope, is）</span></span><br><span class="line"><span class="keyword">const</span> isReservedAttribute = makeMap(<span class="string">'key,ref,slot,slot-scope,is'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 从arr中移除item</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">remove</span>(<span class="params">arr: <span class="built_in">Array</span>&lt;<span class="built_in">any</span>&gt;, item: <span class="built_in">any</span></span>): <span class="title">Array</span>&lt;<span class="title">any</span>&gt; | <span class="title">void</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span>(arr.lenght) &#123;</span><br><span class="line">    <span class="keyword">const</span> index = arr.indexOf(item)</span><br><span class="line">    <span class="comment">// 可以使用(~index)替代</span></span><br><span class="line">    <span class="keyword">if</span>(index &gt; <span class="number">-1</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span> arr.splice(index, <span class="number">1</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Object.prototype.hasOwnProperty的alias</span></span><br><span class="line"><span class="keyword">const</span> hasOwnProperty = <span class="built_in">Object</span>.prototype.hasOwnProperty</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hasOwn</span>(<span class="params">obj: <span class="built_in">Object</span> | <span class="built_in">Array</span>&lt;<span class="built_in">any</span>&gt;, key: <span class="built_in">string</span></span>): <span class="title">boolean</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> hasOwnProperty.call(obj, key)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-字符串转换函数"><a href="#2-3-字符串转换函数" class="headerlink" title="2.3 字符串转换函数"></a>2.3 字符串转换函数</h3><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建某个纯函数的闭包，该闭包有一个结果缓存，对于运算量较大的函数，可以减少重复运算</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">cached</span>&lt;<span class="title">F</span>&gt;(<span class="params">fn: F</span>): <span class="title">F</span> </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> cache = <span class="built_in">Object</span>.create(<span class="literal">null</span>)</span><br><span class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="title">cachedFn</span>(<span class="params">str: <span class="built_in">string</span></span>): <span class="title">any</span> </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> hit = cache[str]</span><br><span class="line">    <span class="keyword">return</span> hit || (cache[str] = fn(str))</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 将烤肉串式命名转为驼峰式命名</span></span><br><span class="line"><span class="keyword">const</span> camelizeRE = <span class="regexp">/-(\w)/g</span></span><br><span class="line"><span class="keyword">const</span> camelize = cached((str: <span class="built_in">string</span>): <span class="function"><span class="params">string</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> str.replace(camelizeRE, <span class="function">(<span class="params">match, p1</span>) =&gt;</span> p1 ? p1.toUppercase() : <span class="string">''</span>)</span><br><span class="line">&#125;)</span><br><span class="line"><span class="comment">// 将驼峰式命名转为烤肉串式命名</span></span><br><span class="line"><span class="keyword">const</span> hyphenRE = <span class="regexp">/\B([A-Z])/g</span></span><br><span class="line"><span class="keyword">const</span> hyphenate = cached((str: <span class="built_in">string</span>): <span class="function"><span class="params">string</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> str.replace(hyphenRE, <span class="string">'-$1'</span>).toLowerCase()</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 字符串首字母大写</span></span><br><span class="line"><span class="keyword">const</span> capitalize = cached((str: <span class="built_in">string</span>): <span class="function"><span class="params">stirng</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> str.charAt(<span class="number">0</span>).toUpperCase() + str.slice(<span class="number">1</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h3 id="2-4-Function相关函数"><a href="#2-4-Function相关函数" class="headerlink" title="2.4 Function相关函数"></a>2.4 Function相关函数</h3><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * bind的polyfill措施</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">// 适用于PhantomJS 1.x的兼容性bind</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">polyfillBind</span>(<span class="params">fn: <span class="built_in">Function</span>, ctx: <span class="built_in">Object</span></span>): <span class="title">Function</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">boundFn</span>(<span class="params">a</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> len = <span class="built_in">arguments</span>.length</span><br><span class="line">    <span class="keyword">return</span> len</span><br><span class="line">      ? len &gt; <span class="number">1</span> ? fn.apply(ctx, <span class="built_in">arguments</span>) : fn.call(ctx, a)</span><br><span class="line">    	: fn.call(ctx)</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  boundFn._length = fn.length</span><br><span class="line">  <span class="keyword">return</span> boundFn</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 原生的bind</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">nativeBind</span>(<span class="params">fn: <span class="built_in">Function</span>, ctx: <span class="built_in">Object</span></span>): <span class="title">Function</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> fn.bind(ctx)</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">const</span> bind = <span class="built_in">Function</span>.prototype.bind ? nativeBind : polyfillBind</span><br><span class="line"></span><br><span class="line"><span class="comment">// Array-like转Array</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">toArray</span>(<span class="params">list: <span class="built_in">any</span>, start: <span class="built_in">number</span> = 0</span>): <span class="title">Array</span>&lt;<span class="title">any</span>&gt; </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> i = list.length - start</span><br><span class="line">  <span class="keyword">const</span> ret: <span class="built_in">Array</span>&lt;<span class="built_in">any</span>&gt; = <span class="keyword">new</span> <span class="built_in">Array</span>(i)</span><br><span class="line">  <span class="keyword">while</span>(i--) &#123;</span><br><span class="line">    ret[i] = list[i + start]</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> ret</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 将一个对象混入另一个对象（并不是严格的继承）</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">extend</span>(<span class="params">to: Ojbect, <span class="keyword">from</span>: <span class="built_in">Object</span></span>): <span class="title">Object</span> </span>&#123;</span><br><span class="line">  <span class="keyword">for</span>(<span class="keyword">const</span> key <span class="keyword">in</span> <span class="keyword">from</span>) <span class="keyword">if</span>(<span class="keyword">from</span>.hasOwnProperty(key)) to[key] = <span class="keyword">from</span>[key]</span><br><span class="line">  <span class="keyword">return</span> to</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 将一个Array&lt;Object&gt;转为Object</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">toObject</span>(<span class="params">arr: <span class="built_in">Array</span>&lt;<span class="built_in">Object</span>&gt;</span>): <span class="title">Object</span> </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> res = &#123;&#125;</span><br><span class="line">  <span class="keyword">for</span>(<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; arr.length; i++) &#123;</span><br><span class="line">    <span class="keyword">if</span>(arr[i]) extend(res, arr[i])</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> res</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 从某个compiler模块生成静态键</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">genStaticKeys</span>(<span class="params">modules: <span class="built_in">Array</span>&lt;ModuleOptions&gt;</span>): <span class="title">string</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> modules.reduce(<span class="function">(<span class="params">keys: <span class="built_in">Array</span>&lt;<span class="built_in">string</span>&gt;, m: ModuleOptions</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> keys.concat(m.staticKeys || [])</span><br><span class="line">  &#125;, []).join(<span class="string">','</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 广义相等检查，特别对于Object，只检查它们是否形式相同</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">looseEqual</span>(<span class="params">a: <span class="built_in">any</span>, b: <span class="built_in">any</span></span>): <span class="title">boolean</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (a === b) <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">  </span><br><span class="line">  <span class="keyword">const</span> isObjectA = isObject(a)</span><br><span class="line">  <span class="keyword">const</span> isObjectB = isObject(b)</span><br><span class="line">  <span class="comment">// 引用类型</span></span><br><span class="line">  <span class="keyword">if</span>(isObjectA &amp;&amp; isObjectB) &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">const</span> isArrayA = <span class="built_in">Array</span>.isArray(a)</span><br><span class="line">      <span class="keyword">const</span> isArrayB = <span class="built_in">Array</span>.isArray(b)</span><br><span class="line">      <span class="comment">// 都是Array，检查每个对应元素是否相同</span></span><br><span class="line">      <span class="keyword">if</span>(isArrayA &amp;&amp; isArrayB) &#123;</span><br><span class="line">        <span class="keyword">return</span> a.length === b.length &amp;&amp; a.every(<span class="function">(<span class="params">value, index</span>) =&gt;</span> &#123;</span><br><span class="line">          <span class="keyword">return</span> looseEqual(value, b[index])</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">// 都不是Array，检查每个键值对是否相同</span></span><br><span class="line">      <span class="keyword">else</span> <span class="keyword">if</span>(!isArrayA &amp;&amp; !isArrayB) &#123;</span><br><span class="line">        <span class="keyword">const</span> keysA = <span class="built_in">Object</span>.keys(a)</span><br><span class="line">        <span class="keyword">const</span> keysB = <span class="built_in">Object</span>.keys(b)</span><br><span class="line">        <span class="keyword">return</span> keysA.length === keysB.length &amp;&amp; keysA.every(<span class="function"><span class="params">key</span> =&gt;</span> &#123;</span><br><span class="line">          <span class="keyword">return</span> looseEuqal(a[key], b[key])</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">// 类型不为同一种引用类型</span></span><br><span class="line">      <span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span>(e) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 非引用类型，转为string处理</span></span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">if</span>(!isObjectA &amp;&amp; !isObjectB) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">String</span>(a) === <span class="built_in">String</span>(b)</span><br><span class="line">  &#125; </span><br><span class="line">  <span class="comment">// 两者类型不同</span></span><br><span class="line">  <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 利用广义相等检查来进行索引查找</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">looseIndexOf</span>(<span class="params">arr: <span class="built_in">Array</span>&lt;mixed&gt;, val: mixed</span>): <span class="title">number</span> </span>&#123;</span><br><span class="line">  <span class="keyword">for</span>(<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; arr.length; i++) &#123;</span><br><span class="line">    <span class="keyword">if</span>(looseEqual(arr[i], val)) <span class="keyword">return</span> i</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">-1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 保证某个函数只运行一次</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">once</span> = (<span class="params">fn: <span class="built_in">Function</span></span>): <span class="title">Function</span> </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> called = <span class="literal">false</span></span><br><span class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(!called) &#123;</span><br><span class="line">      called = <span class="literal">true</span></span><br><span class="line">      fn.apply(<span class="keyword">this</span>, <span class="built_in">arguments</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+
+    
+        <div class="post-tags">
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <a href="/tags/技术原理/">#技术原理</a>
+        </div>
+    
+
+    <!-- Comments -->
+    
+
+</div>
+        </section>
+
+    </div>
+</div>
+
+
+</div>
+
+<!-- Footer -->
+<div class="push"></div>
+
+<footer class="footer-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
+                <h2>About</h2>
+                <p>
+                    This theme was developed by <a href="https://github.com/klugjo">Jonathan Klughertz</a>. The source code is available on Github. Create Websites. Make Magic.
+                </p>
+            </div>
+            
+    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/6.bindActionCreators/">Redux源码解析06--bindActionCr</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/5.combineReducers/">Redux源码解析05--combineReduc</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/4.applyMiddleware/">Redux源码解析04--applyMiddlew</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2019/04/26/2019/redux/3.compose/">Redux源码解析03--compose</a>
+            </li>
+            
+        </ul>
+    </div>
+
+
+
+            
+<div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 footer-categories">
+    <h2>Categories</h2>
+    <ul>
+        
+        <li>
+            <a class="footer-post" href="/categories/源码分析/">源码分析</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/学习计划/">学习计划</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/tutorial/">tutorial</a>
+        </li>
+        
+        <li>
+            <a class="footer-post" href="/categories/前端开发/">前端开发</a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="list-inline footer-social-icons">
+                    
+                    <li class="list-inline-item">
+                        <a href="https://github.com/klugjo/hexo-theme-alpha-dust">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-github"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://twitter.com/?lang=en">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-twitter"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.facebook.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-facebook"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.instagram.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-instagram"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://dribbble.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-dribbble"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://plus.google.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-google-plus"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://www.behance.net/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-behance"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="https://500px.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-500px"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="mailto:test@example.com">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-envelope-o"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="\#">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-rss"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="footer-copyright">
+                    @Untitled. All right reserved | Design & Hexo <a href="http://www.codeblocq.com/">Jonathan Klughertz</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- After footer scripts -->
+
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Tween Max -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Custom JavaScript -->
+<script src="/js/main.js"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>
